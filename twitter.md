@@ -99,6 +99,8 @@ Here is our high-level estimate:
 ## Data model design
 
 This is the general data model which reflects our requirements.
+<img width="1606" height="570" alt="image" src="https://github.com/user-attachments/assets/ee251491-b61d-42bd-b294-f8537b2f816b" />
+
 
 ![twitter-datamodel](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/twitter/twitter-datamodel.png)
 
