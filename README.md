@@ -1,7 +1,5 @@
 # Dropbox System Design – HLD (Interview Revision Notes)
-
 ---
-
 # 1. Requirements
 
 ## Functional Requirements (FR)
@@ -13,9 +11,7 @@
 5. File deduplication
 6. Resume interrupted uploads
 7. Multi-device consistency
-
 ---
-
 ## Non-Functional Requirements (NFR)
 
 * High availability
