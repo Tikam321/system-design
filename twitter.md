@@ -99,8 +99,6 @@ Here is our high-level estimate:
 ## Data model design
 
 This is the general data model which reflects our requirements.
-<img width="1606" height="570" alt="image" src="https://github.com/user-attachments/assets/ee251491-b61d-42bd-b294-f8537b2f816b" />
-
 
 ![twitter-datamodel](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/twitter/twitter-datamodel.png)
 
@@ -253,6 +251,8 @@ Let's assume we want to generate the feed for user A, we will perform the follow
 4. Return the ranked tweets data to the client in a paginated manner.
 
 Feed generation is an intensive process and can take quite a lot of time, especially for users following a lot of people. To improve the performance, the feed can be pre-generated and stored in the cache, then we can have a mechanism to periodically update the feed and apply our ranking algorithm to the new tweets.
+<img width="1606" height="570" alt="image" src="https://github.com/user-attachments/assets/ee251491-b61d-42bd-b294-f8537b2f816b" />
+
 
 **Publishing**
 
