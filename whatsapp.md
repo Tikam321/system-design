@@ -4,8 +4,6 @@
 
 The goal is to design a large-scale chat application similar to WhatsApp. The system must support real-time messaging, offline message delivery, high availability, and persistent storage. The design should handle one hundred million daily active users efficiently and reliably.
 
----
-
 # Functional Requirements
 
 1. A user can send and receive text messages in real time.
@@ -13,8 +11,6 @@ The goal is to design a large-scale chat application similar to WhatsApp. The sy
 3. By default, once a message is successfully delivered to the recipient, it is stored only on the recipient’s device. The server does not permanently store delivered messages.
 4. Users may optionally choose to store their messages on the server for up to ninety days.
 5. The system must ensure that users do not see duplicate messages.
-
----
 
 # Non-Functional Requirements
 
@@ -26,15 +22,11 @@ The goal is to design a large-scale chat application similar to WhatsApp. The sy
 6. When the server responds that a message was successfully sent, the message must already be stored durably.
 7. The system must scale horizontally.
 
----
-
 # Capacity Estimation
 
 ## Message Size
 
 Assume each message, including metadata such as sender identifier, receiver identifier, timestamp, and message identifier, is approximately two hundred bytes.
-
----
 
 ## Queries Per Second Calculation
 
@@ -56,8 +48,6 @@ To handle peak traffic, assume peak load is ten times the average load.
 
 Therefore, the system should handle approximately two hundred thirty thousand requests per second during peak hours.
 
----
-
 ## Storage Estimation
 
 We do not need to store all messages for one year.
@@ -75,12 +65,8 @@ One hundred million users multiplied by twenty messages per day multiplied by tw
 
 Therefore, the system must support at least fifty terabytes of storage capacity.
 
----
-
 # High-Level Architecture
-
 The system consists of the following main components:
-
 1. Client applications (mobile or web).
 2. Load balancer.
 3. WebSocket servers.
@@ -89,10 +75,7 @@ The system consists of the following main components:
 6. Redis for real-time message routing.
 7. Inbox service for offline messages.
 
----
-
 # Real-Time Messaging Flow (Online User)
-
 1. The sender sends a message through a WebSocket connection to the WebSocket server.
 2. The WebSocket server forwards the message to the message service.
 3. The message service writes the message to the persistent database.
@@ -100,8 +83,6 @@ The system consists of the following main components:
 5. The message service publishes the message to Redis.
 6. The WebSocket server that holds the recipient’s active connection receives the message from Redis.
 7. The WebSocket server forwards the message to the recipient’s device in real time.
-
----
 
 # Offline Message Flow
 
@@ -113,8 +94,6 @@ The system consists of the following main components:
 6. The server retrieves all undelivered messages from the inbox table.
 7. The messages are delivered to the recipient.
 8. The inbox entries are marked as delivered.
-
----
 
 # Database Design
 
@@ -152,7 +131,6 @@ When a message needs to be delivered:
 
 Redis is used only for real-time routing. The database remains the source of truth.
 
----
 
 # Handling Duplicate Messages
 
@@ -163,8 +141,6 @@ To prevent duplicate messages:
 3. Database writes are idempotent.
 4. Delivery acknowledgments are tracked using message identifiers.
 
----
-
 # High Availability Strategy
 
 1. Deploy services across multiple availability zones.
@@ -172,8 +148,6 @@ To prevent duplicate messages:
 3. Use Redis clusters instead of a single instance.
 4. Use stateless WebSocket servers to allow horizontal scaling.
 5. Implement automatic failover mechanisms.
-
----
 
 # Scaling WebSocket Connections
 
@@ -185,15 +159,11 @@ If one server can handle one million WebSocket connections, then ten WebSocket s
 
 These servers should be placed behind a load balancer.
 
----
-
 # Data Durability
 
 The system must write the message to persistent storage before acknowledging success to the sender.
 
 This guarantees that messages are not lost even if a server crashes after responding.
-
----
 
 # Summary
 
