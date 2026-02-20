@@ -205,3 +205,47 @@ The system must write the message to persistent storage before acknowledging suc
   "timestamp": number;
 }
 ```
+
+```java
+// 1. Client A sends a message to the Chat Service
+{
+  "action": "send_message",
+  "receiver_id": "user_2",
+  "content": "Hello",
+  "message_id_by_client": 101,
+  "timestamp": 1710000000
+}
+
+// 2. Chat Service confirms it received Client A's message
+{
+  "action": "message_received",
+  "message_id": "uuid-12345",
+  "message_id_by_client": 101,
+  "timestamp": 1710000001
+}
+
+// 3. Chat Service sends the message to Client B
+{
+  "type": "incoming_message",
+  "message_id": "uuid-12345",
+  "sender_id": "user_1",
+  "content": "Hello",
+  "timestamp": 1710000001
+}
+
+// 4. Client B confirms delivery to the Chat Service
+{
+  "type": "message_delivered",
+  "message_id": "uuid-12345",
+  "receiver_id": "user_2",
+  "timestamp": 1710000002
+}
+
+// 5. Chat Service notifies Client A that the message was delivered
+{
+  "type": "message_delivered",
+  "message_id": "uuid-12345",
+  "timestamp": 1710000002
+}
+```
+
