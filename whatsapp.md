@@ -38,31 +38,21 @@ One hundred million users multiplied by twenty messages per user equals two bill
 
 Number of seconds in one day:
 
-Twenty-four multiplied by three thousand six hundred equals eighty-six thousand four hundred seconds.
-
+Twenty-four multiplied by three thousand six hundred equals eighty-six thousand four hundred seconds. 
 Average messages per second:
-
 Two billion divided by eighty-six thousand four hundred is approximately twenty-three thousand messages per second.
-
 To handle peak traffic, assume peak load is ten times the average load.
-
 Therefore, the system should handle approximately two hundred thirty thousand requests per second during peak hours.
-
 ## Storage Estimation
-
 We do not need to store all messages for one year.
-
 We only need to store:
-
 1. Undelivered messages.
 2. Messages for users who enable server-side storage for up to ninety days.
-
 Since most messages are delivered in real time, we assume the average storage duration is four months.
 
 Storage calculation:
 
 One hundred million users multiplied by twenty messages per day multiplied by two hundred bytes multiplied by thirty-one days multiplied by four months equals approximately fifty terabytes of storage.
-
 Therefore, the system must support at least fifty terabytes of storage capacity.
 
 # High-Level Architecture
@@ -98,7 +88,6 @@ The system consists of the following main components:
 # Database Design
 
 ## Message Table
-
 * Message identifier
 * Sender identifier
 * Receiver identifier
@@ -109,16 +98,12 @@ The system consists of the following main components:
 The message table should be sharded by user identifier to allow horizontal scaling.
 
 ## Inbox Table
-
 * User identifier
 * Message identifier
 * Delivery status
 * Timestamp
 
 This table tracks undelivered messages.
-
----
-
 # Real-Time Routing with Redis
 
 Each WebSocket server subscribes only to the Redis channels of users who are currently connected to that server.
@@ -133,7 +118,6 @@ Redis is used only for real-time routing. The database remains the source of tru
 
 
 # Handling Duplicate Messages
-
 To prevent duplicate messages:
 
 1. Each message has a globally unique identifier.
@@ -151,19 +135,12 @@ To prevent duplicate messages:
 
 # Scaling WebSocket Connections
 
-Assume ten percent of users are online simultaneously.
-
-Ten percent of one hundred million users equals ten million concurrent connections.
-
-If one server can handle one million WebSocket connections, then ten WebSocket servers are required.
-
-These servers should be placed behind a load balancer.
+Assume ten percent of users are online simultaneously.Ten percent of one hundred million users equals ten million concurrent connections.
+ If one server can handle one million WebSocket connections, then ten WebSocket servers are required. These servers should be placed behind a load balancer.
 
 # Data Durability
 
-The system must write the message to persistent storage before acknowledging success to the sender.
-
-This guarantees that messages are not lost even if a server crashes after responding.
+The system must write the message to persistent storage before acknowledging success to the sender. This guarantees that messages are not lost even if a server crashes after responding.
 
 # Summary
 
