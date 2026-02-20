@@ -205,6 +205,7 @@ The system must write the message to persistent storage before acknowledging suc
   "timestamp": 1710000002
 }
 ```
+
 ### about message ID
 - In the initial step, the client generates a temporary auto-incremented ID, which is then sent to the Chat Service. This ID serves as a provisional identifier. In response, the Chat Service creates a globally unique ID and relays it back to the client, accompanied by the initial temporary ID. This approach is adopted because, even when employing seemingly unique IDs like UUIDs, there's a residual risk of duplication. Moreover, there's a potential threat from malicious actors who might attempt to forge messages by generating duplicate IDs. By initially setting a client-side ID and subsequently replacing it with a server-generated one, we mitigate these risks.
 
