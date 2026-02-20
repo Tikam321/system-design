@@ -142,16 +142,9 @@ Assume ten percent of users are online simultaneously.Ten percent of one hundred
 
 The system must write the message to persistent storage before acknowledging success to the sender. This guarantees that messages are not lost even if a server crashes after responding.
 
-# Summary
+### API Endpoint Design
+- Messages are sent using WebSocket because it allows real-time, bidirectional communication after a single persistent connection is established. Unlike HTTP long polling, WebSocket removes repeated request-response overhead.
+ <img width="677" height="667" alt="Screenshot 2026-02-20 at 11 12 09 PM" src="https://github.com/user-attachments/assets/3795efbc-01a7-4218-9dbe-ae9adcf5c154" />
 
-This design supports:
+<img width="2090" height="764" alt="image" src="https://github.com/user-attachments/assets/24c77882-7288-4181-a76a-1c6772900106" />
 
-* One hundred million daily active users.
-* Two hundred thirty thousand peak requests per second.
-* Approximately fifty terabytes of storage.
-* Ten million concurrent WebSocket connections.
-* Real-time message delivery.
-* Offline message synchronization.
-* High availability and durability.
-
-The architecture separates real-time delivery from durable storage to ensure both performance and reliability.
