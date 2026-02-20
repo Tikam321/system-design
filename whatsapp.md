@@ -190,7 +190,7 @@ The system must write the message to persistent storage before acknowledging suc
 }
 ```
 4. Client B sends a message to the Chat Service to confirm the message has been successfully delivered
-```java
+```json
 {
   "type": "message_delivered",
   "message_id": string;
