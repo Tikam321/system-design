@@ -193,8 +193,8 @@ The system must write the message to persistent storage before acknowledging suc
 ```json
 {
   "type": "message_delivered",
-  "message_id": string;
-  "timestamp": number;
+  "message_id": string,
+  "timestamp": number,
 }
 ```
 5. Chat Service sends a message to Client A notifying it that Client B has received the message
