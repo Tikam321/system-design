@@ -1,34 +1,210 @@
-Design WhatsApp
-Requirements
-Design a chat app like WhatsApp.
+# Design WhatsApp
 
-Functional Requirements
-A user can send and receive text messages in real time.
-When the user goes online, she receives all the messages that were addressed to her during her offline time.
-By default, once a message is delivered to a user, it will be stored on the user's device and we no longer need to store them on the server (like WhatsApp and WeChat). However, users have the option to modify their history storage policy. They can choose to have their messages stored on the server for up to 90 days.
-The users shouldn't see duplicate messages.
-Non-Functional Requirements
-100M DAU
-20 average daily messages per user
-The maximum length of a message is 1000 English characters.
-Store the undelivered chats for 1 year.
-The system provides high availability.
-Data must be persistent when we respond that the write is successful.
-Resource Estimation
-Assume each user sends 20 messages per day, assume each message, with metadata, is roughly 200 bytes.
+## Introduction
 
-Send/Receive QPS
+The goal is to design a large-scale chat application similar to WhatsApp. The system must support real-time messaging, offline message delivery, high availability, and persistent storage. The design should handle one hundred million daily active users efficiently and reliably.
 
-100M * 20 / (3600 * 24 ) ~= 23K
+---
 
-To plan for the peak hour, we should aim for 230K RPS (Assuming ten times the average value).
+# Functional Requirements
 
-Storage
+1. A user can send and receive text messages in real time.
+2. When a user comes online, she must receive all messages that were sent to her while she was offline.
+3. By default, once a message is successfully delivered to the recipient, it is stored only on the recipient’s device. The server does not permanently store delivered messages.
+4. Users may optionally choose to store their messages on the server for up to ninety days.
+5. The system must ensure that users do not see duplicate messages.
 
-The requirement to store for 1 year is not for all data, but only for data that has not been delivered to the recipient. For a real-time chat app, most messages will be received by the recipient's client shortly after they are sent. Additionally, users have the option to store chat records for 90 days, but not all users will choose this option. Taking these factors into account, we can assume that the average storage duration for messages is 4 months. Therefore, the storage space only needs to accommodate the amount of data for 4 months.
+---
 
-100M * 20 * 200 * 31 * 4 ~= 50 TB
+# Non-Functional Requirements
 
-machines
+1. The system must support one hundred million daily active users.
+2. Each user sends an average of twenty messages per day.
+3. The maximum length of a message is one thousand English characters.
+4. Undelivered messages must be stored for up to one year.
+5. The system must provide high availability.
+6. When the server responds that a message was successfully sent, the message must already be stored durably.
+7. The system must scale horizontally.
 
-Modern web servers can handle a large number of WebSocket connections. WhatsApp's fine-tuned Linux machine could already handle up to 2 million simultaneous WebSocket connections in 2012. Let's assume 10% of the 100MM users will be online at the same time, and 1 machine can handle 1MM connections. We will need 10 machines to handle all the WebSocket connections.
+---
+
+# Capacity Estimation
+
+## Message Size
+
+Assume each message, including metadata such as sender identifier, receiver identifier, timestamp, and message identifier, is approximately two hundred bytes.
+
+---
+
+## Queries Per Second Calculation
+
+Each user sends an average of twenty messages per day.
+
+Total messages per day:
+
+One hundred million users multiplied by twenty messages per user equals two billion messages per day.
+
+Number of seconds in one day:
+
+Twenty-four multiplied by three thousand six hundred equals eighty-six thousand four hundred seconds.
+
+Average messages per second:
+
+Two billion divided by eighty-six thousand four hundred is approximately twenty-three thousand messages per second.
+
+To handle peak traffic, assume peak load is ten times the average load.
+
+Therefore, the system should handle approximately two hundred thirty thousand requests per second during peak hours.
+
+---
+
+## Storage Estimation
+
+We do not need to store all messages for one year.
+
+We only need to store:
+
+1. Undelivered messages.
+2. Messages for users who enable server-side storage for up to ninety days.
+
+Since most messages are delivered in real time, we assume the average storage duration is four months.
+
+Storage calculation:
+
+One hundred million users multiplied by twenty messages per day multiplied by two hundred bytes multiplied by thirty-one days multiplied by four months equals approximately fifty terabytes of storage.
+
+Therefore, the system must support at least fifty terabytes of storage capacity.
+
+---
+
+# High-Level Architecture
+
+The system consists of the following main components:
+
+1. Client applications (mobile or web).
+2. Load balancer.
+3. WebSocket servers.
+4. Message service.
+5. Persistent storage (database).
+6. Redis for real-time message routing.
+7. Inbox service for offline messages.
+
+---
+
+# Real-Time Messaging Flow (Online User)
+
+1. The sender sends a message through a WebSocket connection to the WebSocket server.
+2. The WebSocket server forwards the message to the message service.
+3. The message service writes the message to the persistent database.
+4. Once the message is durably stored, the server sends an acknowledgment to the sender.
+5. The message service publishes the message to Redis.
+6. The WebSocket server that holds the recipient’s active connection receives the message from Redis.
+7. The WebSocket server forwards the message to the recipient’s device in real time.
+
+---
+
+# Offline Message Flow
+
+1. The sender sends a message.
+2. The message is written to the persistent database.
+3. An entry is created in the recipient’s inbox table.
+4. If the recipient is offline, the message is not delivered immediately.
+5. When the recipient reconnects, the client calls a synchronization application programming interface.
+6. The server retrieves all undelivered messages from the inbox table.
+7. The messages are delivered to the recipient.
+8. The inbox entries are marked as delivered.
+
+---
+
+# Database Design
+
+## Message Table
+
+* Message identifier
+* Sender identifier
+* Receiver identifier
+* Message content
+* Timestamp
+* Delivery status
+
+The message table should be sharded by user identifier to allow horizontal scaling.
+
+## Inbox Table
+
+* User identifier
+* Message identifier
+* Delivery status
+* Timestamp
+
+This table tracks undelivered messages.
+
+---
+
+# Real-Time Routing with Redis
+
+Each WebSocket server subscribes only to the Redis channels of users who are currently connected to that server.
+
+When a message needs to be delivered:
+
+1. The system publishes the message to the Redis channel corresponding to the recipient’s user identifier.
+2. Redis forwards the message to the subscribed WebSocket server.
+3. The WebSocket server forwards the message to the user’s device.
+
+Redis is used only for real-time routing. The database remains the source of truth.
+
+---
+
+# Handling Duplicate Messages
+
+To prevent duplicate messages:
+
+1. Each message has a globally unique identifier.
+2. The client ignores messages with identifiers that were already processed.
+3. Database writes are idempotent.
+4. Delivery acknowledgments are tracked using message identifiers.
+
+---
+
+# High Availability Strategy
+
+1. Deploy services across multiple availability zones.
+2. Use replication for databases.
+3. Use Redis clusters instead of a single instance.
+4. Use stateless WebSocket servers to allow horizontal scaling.
+5. Implement automatic failover mechanisms.
+
+---
+
+# Scaling WebSocket Connections
+
+Assume ten percent of users are online simultaneously.
+
+Ten percent of one hundred million users equals ten million concurrent connections.
+
+If one server can handle one million WebSocket connections, then ten WebSocket servers are required.
+
+These servers should be placed behind a load balancer.
+
+---
+
+# Data Durability
+
+The system must write the message to persistent storage before acknowledging success to the sender.
+
+This guarantees that messages are not lost even if a server crashes after responding.
+
+---
+
+# Summary
+
+This design supports:
+
+* One hundred million daily active users.
+* Two hundred thirty thousand peak requests per second.
+* Approximately fifty terabytes of storage.
+* Ten million concurrent WebSocket connections.
+* Real-time message delivery.
+* Offline message synchronization.
+* High availability and durability.
+
+The architecture separates real-time delivery from durable storage to ensure both performance and reliability.
