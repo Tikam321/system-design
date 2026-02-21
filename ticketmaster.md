@@ -1,1 +1,1 @@
-<img width="625" height="460" alt="Screenshot 2026-02-21 at 10 55 41 PM" src="https://github.com/user-attachments/assets/09b1d30d-bd6d-465d-8aa0-1c737bc8cc95" />
+<img width="841" height="569" alt="Screenshot 2026-02-22 at 1 09 24 AM" src="https://github.com/user-attachments/assets/3ef07a41-0123-4a11-beaf-3d9d796bd771" />
