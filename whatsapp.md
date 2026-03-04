@@ -231,3 +231,25 @@ Function: The cache stores unsent messages temporarily. This ensures quicker ret
 ### ID Generator:
 Purpose: Provide unique identifiers.
 Function: The ID generator is tasked with producing unique message IDs. By ensuring each message has a distinct ID, the system can track, retrieve, and manage messages more effectively without confusion or overlap. This component is crucial for data integrity and efficient message handling.
+
+
+
+
+
+### hello intrview 
+##  Users should be able to receive messages sent while they are not online (up to 30 days).
+- So, to send a message:
+- Sender sends a sendMessage message to the Chat Server.
+- The Chat Server looks up all participants in the chat via the ChatParticipant table.
+- The Chat Server (a) writes the message to our Message table and (b) creates an entry in our Inbox table for each recipient.
+- The Chat Server returns a SUCCESS or FAILURE to the sender with the final message id.
+- The Chat Server looks up the websocket connection for each participant and attempts to deliver the message to each of them via newMessage.
+- (For connected clients) Upon receipt, the client will send an ack message to the Chat Server to indicate they've received the message. The Chat Server will then delete the message - from the Inbox table.
+- For clients who aren't connected, we'll keep their messages in the Inbox table for some time. Later, when the client decides to connect, we'll:
+- Look up the user's Inbox and find any undelivered message IDs.
+- For each message ID, look up the message in the Message table.
+- Write those messages to the client's connection via the newMessage message.
+- Upon receipt, the client will send an ack message to the Chat Server to indicate they've received the message.
+- The Chat Server will then delete the message from the Inbox table
+
+<img width="1407" height="810" alt="Screenshot 2026-03-04 at 10 59 02 PM" src="https://github.com/user-attachments/assets/cc1e1009-eef0-4a13-bddc-3116480fd98f" />
