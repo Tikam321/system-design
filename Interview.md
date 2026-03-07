@@ -76,3 +76,47 @@ public void streamDeviceStats(SseEmitter emitter) {
     }
     emitter.complete();
 }
+```
+
+
+🗣️ Interview Answer (Clear Story)
+
+I worked on an Enterprise Device Management System where Super Administrators needed visibility into hardware usage across the organization.
+
+One of the major features I built was a Device Statistics Reporting API which allowed admins to download reports containing device models, OS versions, last login timestamps, and user associations. The reports could be filtered by organization, department, or individual users.
+
+⚠️ Technical Challenge
+
+The main challenge was that the required data was spread across multiple tables such as Users, Organizations, Devices, User-Device mappings, and Connection Logs.
+
+When admins generated a report, the dataset could easily contain millions of records.
+
+Returning everything as a single HTTP response caused request timeouts and high memory consumption, which could potentially crash the server.
+
+🛠️ My Solution
+
+To solve this, I implemented Server-Sent Events (SSE) using Spring’s SseEmitter.
+
+Instead of returning a massive JSON payload, I designed the API to stream the results incrementally.
+
+The backend processes the data asynchronously and queries the database in paginated batches of 100 records, streaming each batch to the client as it becomes available.
+
+⚙️ Backend Optimization
+
+To efficiently fetch the data, I used QueryDSL to build complex dynamic queries across multiple tables.
+
+I also used projections so that only the required columns were fetched instead of loading entire entities.
+
+Additionally, I carefully handled LEFT JOINs so that the report included all registered devices, even those that were currently offline, while determining their last active status using connection logs.
+
+🚀 Impact
+
+This approach significantly improved the system:
+
+Prevented HTTP timeouts
+
+Reduced server memory usage
+
+Allowed clients to start processing data immediately
+
+Enabled the system to handle millions of records efficiently
