@@ -11,6 +11,8 @@ Data Link (L2)
 Physical (L1)
 Quick anchor:
 
+  APSTN DP (epstien donald phuk)
+
 L7 what app wants
 L4 delivery between apps (ports, TCP/UDP)
 L3 routing between networks (IP)
