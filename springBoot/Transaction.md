@@ -56,29 +56,29 @@ public class PaymentService {
 - 3) Transaction Propagation (Very Important)
 - Propagation defines what happens when a transactional method calls another transactional method.
 
-Common Modes
-REQUIRED (default)
-Join existing transaction if present.
-Otherwise create a new one.
-REQUIRES_NEW
-Always start a new transaction.
-Suspends existing transaction temporarily.
-NESTED
-Runs inside existing transaction with a savepoint.
-Can roll back to savepoint without rolling back outer transaction (DB support required).
-SUPPORTS
-Use current transaction if exists.
-Else run without transaction.
-NOT_SUPPORTED
-Always run without transaction.
-Suspends existing transaction.
-MANDATORY
-Must have an existing transaction.
-Throws exception if none exists.
-NEVER
-Must run without transaction.
-Throws exception if a transaction exists.
-4) Propagation Example
+-    Common Modes
+-    REQUIRED (default)
+-    Join existing transaction if present.
+-   Otherwise create a new one.
+-   REQUIRES_NEW
+-   Always start a new transaction.
+-    Suspends existing transaction temporarily.
+-    NESTED
+-    Runs inside existing transaction with a savepoint.
+-    Can roll back to savepoint without rolling back outer transaction (DB support required).
+-    SUPPORTS
+-   Use current transaction if exists.
+-    Else run without transaction.
+-    NOT_SUPPORTED
+-    Always run without transaction.
+-    Suspends existing transaction.
+-    MANDATORY
+-    Must have an existing transaction.
+-    Throws exception if none exists.
+-    NEVER
+-    Must run without transaction.
+-    Throws exception if a transaction exists.
+-    4) Propagation Example
 ```java
 @Service
 public class CheckoutService {
