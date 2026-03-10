@@ -116,3 +116,11 @@ Know propagation:
 REQUIRED for normal service logic
 REQUIRES_NEW for independent operations (audit/outbox)
 use other modes only with clear need.
+
+
+### DB loack type 
+1. shareLock(read lock) - transactions T1 applied share lock on DB ROW then transaction T2 can also acquire share lock on the same db row .
+2. Exclusive Lock(write lock) - if transactoin have read lock or write lock on db row then t2 cannot able to applu the write lock on that db row.
+
+so ths is how we use the lock to maintain the isolation level.
+### for more clarity please check from ipad spring framework line number from 64 to 71.
