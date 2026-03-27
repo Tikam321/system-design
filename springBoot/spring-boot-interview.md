@@ -118,6 +118,47 @@ You can create this file manually or use Spring Initializer to create this file.
 - @SpringBootApplication – used to denote the main class of a Boot Application. This annotation combines @Configuration, @EnableAutoConfiguration,
 - and @ComponentScan annotations with their default attributes.
 
+17.  What is Spring Boot dependency management?
+- Spring Boot dependency management is used to manage dependencies and configuration automatically without you specifying the version for any of that dependencies.
+
+18. Can we create a non-web application in Spring Boot?
+- Yes, we can create a non-web application by removing the web dependencies from the classpath along with changing the way Spring Boot creates the application context.
+
+19. Is it possible to change the port of the embedded Tomcat server in Spring Boot?
+- Yes, it is possible. By using the server.port in the application.properties.
+
+20. What are the actuator-provided endpoints used for monitoring the Spring boot application?
+- Actuators provide below pre-defined endpoints to monitor our application.
+- Health
+- Info
+- Beans
+- Mappings
+- Configprops
+- Httptrace
+- Heapdump
+- Threaddump
+- Shutdown
+
+21. Can we disable the default web server in the Spring boot application?
+- Yes, we can use application.properties to configure the web application type i.e spring.main.web-application-type=none.
+
+22. The main functionality of spring-boot-starter-web is to let you build HTTP web apps and REST APIs quickly with auto-configuration.
+
+It mainly provides:
+
+Spring MVC (@RestController, @RequestMapping, etc.)
+An embedded web server (Tomcat by default)
+JSON support (Jackson) for request/response conversion
+Core web auto-configuration so you can run with minimal setup
+
+
+
+
+
+
+
+
+
 
 
 
