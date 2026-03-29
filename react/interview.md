@@ -2,6 +2,7 @@
 
 Yes. Here’s a simple custom hook + component usage example.
 
+```java
 // useCounter.js
 import { useState } from "react";
 
@@ -30,4 +31,5 @@ export default function Counter() {
     </div>
   );
 }
+```
 A custom hook is just a reusable func
