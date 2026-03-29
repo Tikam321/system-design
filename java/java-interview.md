@@ -565,5 +565,125 @@ Wrong equals/hashCode causing map growth
 ThreadLocal values not cleared
 In short: GC works, but leaked objects stay referenced, so memory is not reclaimed.
 
+49. What happens if you call return in try and finally also return?
+If both try and finally have returned, the one in the end always wins. Java executes finally at the end no matter what happens in try or catch. So the return value from try is ignored and replaced by the return from finally.
 
+
+# Scenario-Based Java Interview Questions
+
+50. Your app is slow after running for 2 hours. What do you check first?
+The first thing to check is memory usage to see if it keeps growing over time, which may indicate a memory leak. Then object creation is reviewed to see if too many objects are being created and not released. Application logs are checked because excessive logging can slow down performance. Database calls are also reviewed to find slow queries or stuck connections. Finally, CPU usage is monitored to identify any background tasks consuming too many resources.
+
+51. API is timing out sometimes. How do you debug?
+The issue is first reproduced to understand under what conditions it occurs. Application logs are then checked to identify where the delay is happening. Metrics such as response time, database latency, and external API time are reviewed. Dependencies are isolated to determine whether the issue comes from the database, network, or third-party services. Once identified, optimizations like query tuning, timeouts, or retries are applied.
+
+52. You see OutOfMemoryError - what are 3 likely causes?
+One common cause is too much caching where data keeps growing without limits. Another reason is large collections like lists or maps holding data longer than needed. Not closing resources such as database connections, streams, or files can also cause memory issues. Sometimes infinite loops keep adding objects to memory. Poor garbage collection tuning can also lead to this error.
+
+53. Multiple users update the same record - how do you avoid wrong data?
+One way is using database locks so only one user can update the record at a time. Another approach is versioning, where updates fail if the data has changed since it was last read. Atomic updates help ensure data changes happen safely in one step. Transactions are also used to keep updates consistent. These methods prevent users from overwriting each other’s changes.
+
+54. A background job runs twice how do you prevent duplicates?
+The job is designed to be idempotent so running it multiple times does not create duplicate results. A marker such as a processed ID or status is stored in the database. Before doing any work, the job checks whether the task has already been completed. If it is already processed, the job safely skips it. This ensures correct results even if the job runs twice.
+
+55. You must handle 1 lakh requests per minute what changes in code or design?
+Connection pooling is used so new connections are not created for every request. Caching is added to reduce repeated database or external API calls. Heavy processing is moved out of the request flow whenever possible. Asynchronous processing is used for non-critical tasks. These changes help the system remain fast and stable under high load.
+
+56. A thread is stuck how do you identify why?
+A thread dump is taken to see what the thread is currently doing. Locks are checked to find out if the thread is waiting for another thread to release a resource. Waiting or sleeping states are reviewed to identify long pauses. Application logs help confirm where execution stopped. This usually points to deadlocks or long-running operations.
+
+57. You need to release resources reliably what pattern do you use?
+Resources are always closed in a finally block to ensure they are released. In modern Java, try-with-resources is preferred for cleaner and safer code. This guarantees that files, streams, and database connections are closed automatically. Even if an exception occurs, resources are still freed. This prevents memory and connection leaks.
+
+
+# Java Memory Management Interview Questions
+57. Heap vs Stack (short recap)
+Stack memory is used for method calls and local variables, and it works in a very fast way. Each thread has its own stack, so data is not shared. Heap memory is used for objects and is shared across the application. Objects live longer in heap compared to stack variables. Stack is small and fast, heap is bigger but slower. Stack memory is cleared automatically when a method ends.
+
+58. What is garbage collection (GC) in simple words?
+Garbage collection is how Java frees memory automatically. When an object is no longer needed, GC removes it from memory. This helps avoid manual memory cleanup like in C or C++. Developers don’t delete objects themselves. The JVM handles this in the background. This reduces chances of memory-related bugs.
+
+59. What makes an object “unused” or unreachable?
+An object becomes unused when no active part of the program refers to it. If there is no reference from stack, static variables, or other objects, it is unreachable. Once unreachable, the object cannot be used again. GC can then remove it. This usually happens after methods finish execution. Local variables going out of scope is a common reason.
+
+60. What is a memory leak in Java?
+A memory leak happens when objects are not needed but still kept in memory. For example, a static list keeps adding objects and is never cleared. Even though GC exists, it cannot remove these objects because they are still referenced. Over time, memory usage keeps growing. This can crash the app. Long-running apps suffer the most from leaks.
+
+
+61. How do you reduce memory usage?
+Memory usage is reduced by clearing caches that are no longer needed. Object references are removed once the work is completed so they can be garbage collected. Files, database connections, and streams are always closed properly. Storing large objects for a long time is avoided unless necessary. Regular memory monitoring helps identify and fix issues early.
+
+62. OutOfMemoryError vs “app is slow” - what’s the difference?
+OutOfMemoryError means the JVM cannot allocate more memory and the app may crash. App slowness usually means high CPU, heavy GC, or slow DB calls. Slow apps still run, but poorly. OOM is a serious failure. They are related but not the same problem. A slow app can eventually lead to OOM if ignored.
+
+63. When does GC run?
+GC runs when the JVM decides memory needs to be freed. Developers cannot control the exact timing. It usually runs when memory is low. You can request GC, but it may not run immediately. The JVM manages this automatically. Different GC algorithms behave differently.
+
+# Java Full Stack Developer Interview Questions
+
+64. How do you design a REST API in Spring Boot (high level)?
+The design starts by defining clear resources and meaningful URLs based on the business domain. Correct HTTP methods like GET, POST, PUT, and DELETE are chosen for each operation. Proper HTTP status codes are returned for both success and error cases. Input validation is added at the request level to prevent invalid data. Controllers are kept thin, while business logic is handled in service classes. Error responses are kept consistent across all APIs.
+
+65. How do you handle database transactions safely in a Java backend?
+Database transactions are managed using transactional boundaries, commonly with annotations like @Transactional. This ensures that all operations either complete successfully or roll back together in case of failure. Long-running tasks are avoided inside transactions to reduce lock time. External API calls are kept outside transactions to prevent blocking and timeouts. Proper isolation levels are used to maintain data consistency and avoid deadlocks.
+
+66. What causes N+1 queries in ORM like Hibernate and how do you fix it?
+N+1 queries happen when a parent list is loaded first and child data is fetched one by one. This creates many unnecessary database calls. It usually occurs with lazy loading. To fix it, I use fetch joins or entity graphs. Batch fetching can also reduce queries. This improves performance significantly.
+
+67. How do you improve API latency without just adding servers?
+API latency is improved by caching frequently accessed data. Payload sizes are reduced by returning only required fields. Pagination is added to avoid sending large responses at once. Database queries and indexes are optimized for faster access. Connections are reused through pooling. Heavy processing is moved to asynchronous or background tasks.
+
+68. How do you version APIs without breaking clients?
+API versioning is done using URL paths or request headers. Backward compatibility is maintained wherever possible. Breaking changes are introduced only in new versions. Older versions are deprecated gradually instead of being removed suddenly. Clear timelines are shared with consumers to ensure smooth migration.
+
+69. How do you approach debugging a production issue end to end?
+The process starts by checking logs, metrics, and monitoring dashboards. Distributed traces are used to identify slow or failing services. The issue is reproduced with minimal data when possible. The problematic layer, such as UI, API, or database, is isolated. Fixes are validated with tests. Monitoring confirms stability after release.
+
+70. What testing mix do you typically aim for in full stack work?
+Unit tests are used to validate core business logic. Integration tests cover API endpoints and database interactions. End-to-end tests are added for critical user flows. The goal is to balance coverage without slowing down builds. Fast feedback is prioritized. This testing mix provides confidence before deployment.
+
+71. What’s the difference between authentication and authorization in a web app?
+Authentication is about verifying who the user is. Authorization decides what the user is allowed to access. A user must be authenticated before authorization is checked. In Java applications, this is commonly handled using Spring Security. Filters handle authentication, while roles or permissions control access. Both are important for secure systems.
+
+72. How do you handle database transactions safely in a Java backend?
+Database transactions are managed using transactional boundaries, commonly with annotations like @Transactional. This ensures that all operations either complete successfully or roll back together in case of failure. Long-running tasks are avoided inside transactions to reduce lock time. External API calls are kept outside transactions to prevent blocking and timeouts. Proper isolation levels are used to maintain data consistency and avoid deadlocks.
+
+73. What causes N+1 queries in ORM like Hibernate and how do you fix it?
+N+1 queries happen when a parent list is loaded first and child data is fetched one by one. This creates many unnecessary database calls. It usually occurs with lazy loading. To fix it, I use fetch joins or entity graphs. Batch fetching can also reduce queries. This improves performance significantly.
+
+74. How do you improve API latency without just adding servers?
+API latency is improved by caching frequently accessed data. Payload sizes are reduced by returning only required fields. Pagination is added to avoid sending large responses at once. Database queries and indexes are optimized for faster access. Connections are reused through pooling. Heavy processing is moved to asynchronous or background tasks.
+
+75. How do you version APIs without breaking clients?
+API versioning is done using URL paths or request headers. Backward compatibility is maintained wherever possible. Breaking changes are introduced only in new versions. Older versions are deprecated gradually instead of being removed suddenly. Clear timelines are shared with consumers to ensure smooth migration.
+
+76. How do you approach debugging a production issue end to end?
+The process starts by checking logs, metrics, and monitoring dashboards. Distributed traces are used to identify slow or failing services. The issue is reproduced with minimal data when possible. The problematic layer, such as UI, API, or database, is isolated. Fixes are validated with tests. Monitoring confirms stability after release.
+
+77. What testing mix do you typically aim for in full stack work?
+Unit tests are used to validate core business logic. Integration tests cover API endpoints and database interactions. End-to-end tests are added for critical user flows. The goal is to balance coverage without slowing down builds. Fast feedback is prioritized. This testing mix provides confidence before deployment.
+
+78. How do you handle CORS and security headers in a full stack setup?
+Allowed origins and HTTP methods are configured carefully. Wildcards are avoided for authenticated APIs. CORS rules are applied at the gateway or backend level. Security headers are added to protect against common web attacks. All settings are reviewed carefully for production safety. This ensures secure communication.
+
+79. How do you package and deploy a Java full stack app?
+The application is packaged as a runnable JAR file. It is containerized using Docker for consistency across environments. CI/CD pipelines handle building, testing, and deployment. The application runs behind a reverse proxy such as Nginx. Configuration is externalized using environment variables. Secrets are managed securely.
+
+80. differnce between speing and spring boot ?
+spring (Spring Framework) is the core framework.
+Spring Boot is built on top of Spring to reduce setup and run apps faster.
+
+Main difference:
+
+Spring:
+
+You configure many things manually (beans, server setup, XML/Java config).
+More control, more boilerplate.
+Spring Boot:
+
+Auto-configuration, starter dependencies, embedded server (Tomcat/Jetty), production features (Actuator).
+Less boilerplate, faster development.
+In short:
+Spring = foundation.
+Spring Boot = opinionated, faster way to build Spring apps.
 
