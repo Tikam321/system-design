@@ -687,3 +687,7 @@ In short:
 Spring = foundation.
 Spring Boot = opinionated, faster way to build Spring apps.
 
+81. whatis Executor service?
+- ExecutorService is a Java concurrency interface that manages a pool of worker threads and executes tasks asynchronously.
+- It abstracts manual thread creation, supports submit() with Future results, and provides lifecycle control like shutdown() and awaitTermination(). It improves scalability, thread reuse, and cleaner concurrent code.
+
