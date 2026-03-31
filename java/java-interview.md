@@ -4,7 +4,7 @@
 2. variable: when it used of variable then variable value can be change later
 3. class: when it used on the class means class cannot be inherited later.
 - finally -> is used with try() block and it will alywas executed whether or not exception in the code.
-- finalize -> which is calle db garbage collector before performing the garbage collection.
+- finalize ->  finalize is a method called before garbage collection, but its execution is not guaranteed.
 
 2. What is Java? 
 - Java is a high-level programming language that was developed by James Gosling in the year 1982.
