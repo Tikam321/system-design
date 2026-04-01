@@ -137,7 +137,7 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-'```
+```
   
 14. How to check the environment properties in your Spring boot application?
 - Spring Boot actuator “/env” returns the list of all the environment properties of running the spring boot application.
