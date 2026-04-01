@@ -99,11 +99,45 @@ IoC Container is a framework for implementing automatic dependency injection. It
 You can define both application and Spring boot-related properties into a file called application.properties.
 You can create this file manually or use Spring Initializer to create this file. You don’t need to do any special configuration to instruct Spring Boot to load this file, If it exists in classpath then spring boot automatically loads it and configure itself and the application code accordingly.
 
-13. differencebetween tomact and jetty server
+13. difference between tomact and jetty server
 - Tomcat and Jetty are both Java servlet servers.
 - Tomcat is the default in Spring Boot, very widely used, and usually the easiest “standard” choice with stronger ecosystem support.
 - Jetty is generally lighter and more modular, and many teams prefer it for embedded apps or workloads with lots of long-lived async connections (like WebSocket/SSE).
 - In short: choose Tomcat for simplicity and broad support, choose Jetty when lightweight footprint and async connection handling are top priorities.
+```java
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+    implementation 'org.springframework.boot:spring-boot-starter-jetty'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+'```
   
 14. How to check the environment properties in your Spring boot application?
 - Spring Boot actuator “/env” returns the list of all the environment properties of running the spring boot application.
