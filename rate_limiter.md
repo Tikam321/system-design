@@ -1,4 +1,16 @@
-// will write teh cotentn near future (take refferene from the system design school)
+# functional requirement
+- can limit the request with ip/api key/userid(jwt token)
+- error 429 with error message also show timestamp when the user can send request
+
+# non functional requirement
+- low latancy (< 10ms)
+- durable(rate limit for each user/aikey/ip should be durable)
+- high available (eventual consistent)
+- system should handle 1M request/second
+
+entity ->
+
+
 
 # Token Bucket Rate Limiting with Redis (Summary)
 
