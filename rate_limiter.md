@@ -8,11 +8,156 @@
 - high available (eventual consistent)
 - system should handle 1M request/second
 
+# Entity (db table)
+
 entity ->
+1. Rules ->  for different users we have different limit 
+2. client ->  differetn clienst like IP/userid/ip/api key
+3. Request -> requiredUrl, clientid, ruleid
 
+rule
+rule_id(pk)
+rate_limit_count
+exipiry_time(time_limit)
+createtimestamp
 
+client
+user_type (IP,USERID,API_KEY .ETC)(pk)
+rule_id(fk)
+createtimestamp
 
+# API DESIGN(INTERFACE DESIGN)
 # Token Bucket Rate Limiting with Redis (Summary)
+
+```java
+get  api/ratelimit?client_id={}
+ respoonse : {
+ ratelimit_count: 23,
+ reset_time: time1,
+ }
+```
+ 
+- in response header ->  It also provides information for response headers like 
+-  X-RateLimit-Remaining and 
+-  X-RateLimit-Reset.
+
+# hogh level design
+## Where should we place the rate limiter?
+
+1. In process (place rate limiter at the each microservice level)
+<img width="678" height="411" alt="Screenshot 2026-04-07 at 11 31 31 PM" src="https://github.com/user-attachments/assets/4ec7bba0-defe-4043-a714-594cd4010afb" />
+
+- issue -> the main issue is at each microservice level only knowth rate limit about the request it priocess but what about the request a at other micrroservice 
+
+2. dedicated server
+<img width="683" height="584" alt="Screenshot 2026-04-07 at 11 35 04 PM" src="https://github.com/user-attachments/assets/f65a8c66-048b-4ab2-9e6d-6541d6189214" />
+
+-  when rate limiter become it own dedicated microservices, for each request at each m,icroserlevel we have to check the rate limithing by request to rate limiter service, so it become the extra network round which increase latency.
+
+- You've also introduced another point of failure. If your rate limiting service goes down, you need to decide: do you fail open (allow all requests through, risking overload) or fail closed (reject all requests, essentially taking your API offline)? Neither option is great.
+
+3. Api gateway
+<img width="669" height="473" alt="Screenshot 2026-04-07 at 11 48 43 PM" src="https://github.com/user-attachments/assets/a6be7ef9-908a-4ed2-a5a9-86d38b46e6ea" />
+
+- we have applied the ratelimimter check at the edge of api gateway.
+- every request either go to downstream server or either give 429 status with response header x-RateLimit-Remaining  x-RateLimit-Reset
+- this is the standard production approach used in the industry.
+- challenge -> we cannot apply the rate limit baseed on the different category user like premium user as we  haev aces to request header as we don't have the access at applicatoin level.
+
+# how to identify theclients
+- user id: jwt token (base64 encryption) -> decode it
+- ip address -> X-faorward-For
+- API Key-> X-API-KEY
+
+# rate limiting methods 
+1. Fixed Window Counter
+<img width="742" height="393" alt="Screenshot 2026-04-08 at 12 02 08 AM" src="https://github.com/user-attachments/assets/c87d9eb7-c415-40f8-b4b1-feb1278cb51b" />
+
+- The simplest approach divides time into fixed windows (like 1-minute buckets) and counts requests in each window.
+- For each user, we'd maintain a counter that resets to zero at the start of each new window.
+- If the counter exceeds the limit during a window, reject new requests until the window resets.
+```java
+  {
+  "alice:12:00:00": 100,
+  "alice:12:01:00": 5,
+  "bob:12:00:00": 20,
+  "charlie:12:00:00": 0,
+  "dave:12:00:00": 54,
+  "eve:12:00:00": 0,
+  "frank:12:00:00": 12,
+}
+  ```
+- challange(Bouncry issue) -> The main challenges are boundary effects: a user could make 100 requests at 12:00:59, then immediately make another 100 requests at 12:01:00.
+
+2. Sliding Window Log
+<img width="729" height="443" alt="Screenshot 2026-04-08 at 12 14 14 AM" src="https://github.com/user-attachments/assets/ffa1371e-aa9a-4132-8b44-ed3f1e6f8aec" />
+- this approach keeps timestamp log for the individual ,when when new request arrived then it remove the older timestamp which is not in current time window.
+- now unfare burst allowed.
+- challange ->  memory usage(to keep track of timestamp for each user)
+
+Token Bucket -> 
+- Each client has a bucket of tokens (burst capacity)
+- Tokens are added at a fixed refill rate
+- Each request consumes 1 token
+- If no tokens → request is rejected (rate limited)
+- Supports:
+- Bursts → via bucket capacity
+- Sustained rate → via refill rate
+- Example:
+- Capacity = 100 tokens
+- Refill = 10 tokens/min
+→ 100 instant requests, then limited to 10/min
+- Implementation:
+##  Track (tokens, last_refill_time) per client
+- Challenges:
+- Choosing capacity & refill rate
+- Handling cold start (idle users with full buckets)
+
+<img width="752" height="377" alt="Screenshot 2026-04-08 at 12 23 48 AM" src="https://github.com/user-attachments/assets/b09aefe5-df1b-4331-93de-a27090a6efe2" />
+
+- For our system, we'll go with the Token Bucket algorithm. It strikes the best balance between simplicity, memory efficiency, and handling real-world traffic patterns.
+
+- we will use Redis for the keep track of tokencount and last_refile_timestamp for each request
+- Redis can become our central source of truth for all token bucket state. When any gateway needs to check or update a user's rate limit, it talks to Redis.
+- HMGET alice:bucket tokens last_refill (to fetch the token for alice user fro redis)
+- The HMGET command retrieves the values of multiple keys from a Redis hash. In this case, we're getting the current tokens count and the last_refill timestamp for Alice's bucket.
+- the redis will calculte teh token from the last_refill time and then it add to the current token count upto max capacity.
+- Finally, the gateway makes the final decision based on Alice's updated token count. If she has at least 1 token available, the gateway allows the request and decrements her token count by 1. If she has no tokens remaining, the gateway rejects the request.
+- for race conditions redis wil update tokena and refill_timestamp 
+```java
+MULTI(transaction)
+HSET alice:bucket tokens <new_token_count>
+HSET alice:bucket last_refill <current_timestamp>
+EXPIRE alice:bucket 3600
+EXEC(end transaction)
+```
+
+but wait we have applied the transaction t avoid race conditoon but waht about the read operatoin let's say alie has only 1 token and  he called two request simultaneuuosly then both the request will read the same time so means 
+
+# give response on 429 
+```java
+HTTP/1.1 429 Too Many Requests
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1640995200
+Retry-After: 60
+Content-Type: application/json
+
+{
+  "error": "Rate limit exceeded",
+  "message": "You have exceeded the rate limit of 100 requests per minute. Try again in 60 seconds."
+}
+```
+
+
+
+
+
+
+
+
+
+
 
 ## Core Idea
 - We usually do **lazy refill**: tokens are recalculated when a request arrives.
