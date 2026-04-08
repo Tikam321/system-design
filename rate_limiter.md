@@ -148,16 +148,50 @@ Content-Type: application/json
   "message": "You have exceeded the rate limit of 100 requests per minute. Try again in 60 seconds."
 }
 ```
+# 1) How do we scale to handle 1M requests/second?
+- so at small load our api gateway can use the single redis server for token info (status) but for 1 million request/second we need the multiple redis iunstance
+- as single instance of redis can handle upto 100000-200000 request per seconds so we need multiple redis server to handle the massive load .
+- so we need to partition our redis server in that way so tha each request know which redis instance to check the token status.
+- so we need the distributed partition algorithm like consitent hashing so we can create create the hash of the particular key and teh we will find the moduleo of it and then we will fetch that redis server for token info.
+- For anonymous users, we hash their IP address. For API key requests, we hash the API key. This ensures each client's rate limiting state lives on exactly one shard, while distributing the load evenly across all shards.
+
+<img width="740" height="390" alt="Screenshot 2026-04-08 at 9 56 10 PM" src="https://github.com/user-attachments/assets/59e68a6a-5a4a-49d9-8544-42c6a3cde05a" />
+- With 10 Redis shards, each handling ~100k operations/second, we should be able to handle our 1M request/second target.
 
 
+# 2) How do we ensure high availability and fault tolerance?
 
+- When a Redis shard becomes unavailable, we face a fundamental decision about our failure mode. We have two options:
+- 1. Fail closed
+- Approach -> When the rate limiter can't reach Redis, reject all requests with HTTP 503 "Service Unavailable" or HTTP 429 responses. This is the most restrictive option. No requests get through that we can't verify are within limits.
+- challanges -> This will effectively take your API offline during Redis outages. Users see failed requests even if your backend services are healthy. 
+- actual use case ->  Financial systems processing payments might prefer to reject transactions rather than risk processing them without rate limits.
+- 2. Fail-Over -> When the rate limiter can't reach Redis, allow all requests to proceed as if rate limiting was disabled.
+- The API gateway skips rate limit checks and forwards requests directly to backend services. This keeps your API available even when the rate limiting infrastructure has issues.
+- Challenges -> The obvious downside is temporarily losing rate limit protection. During Redis outages, malicious users could potentially overwhelm your backend services with requests. More critically, this can cause cascade failures 
 
+use case -For social media platforms, this is especially dangerous during viral events when traffic spikes are already stressing the system. Failing open could turn a rate limiter outage into a complete platform failure.
 
+<img width="734" height="626" alt="Screenshot 2026-04-08 at 10 27 00 PM" src="https://github.com/user-attachments/assets/6560ba74-114a-422d-97c1-2facced878af" />
 
+# how to handle the hot keys
+- For Legitimate High-Volume Clients:
+- Client-side rate limiting: Encourage well-behaved clients to implement their own rate limiting to smooth traffic patterns. This prevents legitimate users from -
+-accidentally creating hot shards while reducing server load. Many API SDKs include built-in client-side rate limiting that respects server response headers.
+- Request queuing/batching: Allow clients to batch multiple operations into single requests, reducing the total number of rate limit checks needed.
+- Premium tiers: Offer higher rate limits for power users who need them, potentially with dedicated infrastructure.
+- For Abusive Traffic:
+- Automatic blocking: When a client hits rate limits consistently (say, 10 times in a minute), temporarily block their IP/API key entirely by adding them to a blocklist. = The list can be kept in one of the Redis shards and only checked in case of cache misses.
+- DDoS protection: Use services like Cloudflare or AWS Shield that can detect and block malicious traffic before it reaches your rate limiter.
 
-
-
-
+# 5) How do we handle dynamic rule configuration?
+- 1. poll based configuration: Store rule configuration in a database or dedicated configuration service. 
+- Your API gateways periodically poll for configuration changes (say, every 30 seconds) and update their rate limiting logic accordingly.
+- This is the most common approach because it's straightforward to implement and handles the majority of use cases.
+- The configuration service can be as simple as a database table with columns for client_type, endpoint, requests_per_minute, etc.
+- Gateways query this table on a schedule and cache the results locally.
+- challenge -> The main downside is update delay. There's always a window between when you change a rule and when it takes effect across all gateways.
+- 2. push based configuration -> 
 
 ## Core Idea
 - We usually do **lazy refill**: tokens are recalculated when a request arrives.
