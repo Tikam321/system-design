@@ -191,36 +191,21 @@ use case -For social media platforms, this is especially dangerous during viral 
 - The configuration service can be as simple as a database table with columns for client_type, endpoint, requests_per_minute, etc.
 - Gateways query this table on a schedule and cache the results locally.
 - challenge -> The main downside is update delay. There's always a window between when you change a rule and when it takes effect across all gateways.
-- 2. push based configuration -> 
+- 2. push based configuration ->
+ - Use a push-based system where configuration changes are immediately sent to all API gateways.
+- This is exactly what ZooKeeper was designed for - distributed configuration management with real-time notifications.
+- ZooKeeper maintains configuration data and notifies all connected clients (your API gateways) immediately when any configuration changes.
+- Other options include Redis pub/sub or custom configuration services that maintain persistent connections to gateways.
+- When an operator changes a rate limit rule, the configuration service immediately notifies all connected gateways, which update their rules within seconds.
+<img width="680" height="540" alt="Screenshot 2026-04-09 at 10 47 00 PM" src="https://github.com/user-attachments/assets/f25cadd9-95c3-477d-a977-a3638a592320" />
 
-## Core Idea
-- We usually do **lazy refill**: tokens are recalculated when a request arrives.
-- We do **not** need to add tokens at fixed intervals in a background scheduler.
 
-## Per-User Bucket State in Redis
-- `tokens`: current available tokens.
-- `last_refill_ts`: last time refill was calculated.
 
-## Request-Time Flow
-1. Read current time (`now`).
-2. Compute elapsed time: `elapsed = now - last_refill_ts`.
-3. Compute new tokens: `new_tokens = elapsed * refill_rate`.
-4. Refill with cap: `tokens = min(capacity, tokens + new_tokens)`.
-5. If `tokens >= 1`:
-- allow request
-- decrement `tokens = tokens - 1`
-6. Else:
-- reject with rate-limit response (for example `429`).
-7. Save updated `tokens` and `last_refill_ts` back to Redis.
 
-## Race Condition Handling
-- Use a **single Redis Lua script** for refill + check + decrement + save.
-- Lua execution in Redis is atomic, so concurrent requests cannot interleave this logic.
-- This prevents double-consume and inconsistent token state.
 
-## Alternative (Less Preferred)
-- `WATCH` + `MULTI/EXEC` with retries can work, but is more complex and can conflict under high contention.
 
-## Operational Note
-- Set key TTL (`EXPIRE`) so inactive user buckets are automatically cleaned up.
+
+
+
+
 
