@@ -633,3 +633,59 @@ Common implementation: poll outbox table in batches + retries + DLQ/alerting for
 3. clock skew in reconcilliation
 - reconcile based on strict time and universtal transaction id.
 
+
+## Kafka Failure Handling Summary
+
+### 1. Consumer Failure (Crash)
+
+* Kafka handles via **rebalance**
+* Another consumer resumes from **last committed offset**
+* Use:
+
+  * **Manual offset commit**
+  * **Idempotent consumers**
+
+---
+
+### 2. Event Processing Failure
+
+* Consumer is alive but processing fails
+* Handle using:
+
+  * **Retry (exponential backoff + jitter)** → for transient errors
+  * **DLQ (Dead Letter Queue)** → for permanent failures
+* After DLQ → **commit offset** (avoid partition blocking)
+
+---
+
+### 3. Retry vs DLQ
+
+* **Retry → temporary issues**
+* **DLQ → permanent failures**
+* DLQ = just another Kafka topic (not built-in)
+
+---
+
+### 4. Producer Side
+
+* **Retry → built-in (Kafka producer config)**
+* **Idempotent producer → avoids duplicates**
+* **DLQ → not built-in (manual if needed)**
+
+---
+
+### 5. Key Concepts
+
+* Kafka = **at-least-once delivery**
+* Must handle:
+
+  * Idempotency
+  * Offset management
+  * Retry + DLQ
+
+---
+
+### One-Line Summary
+
+> Kafka handles consumer failure, while application logic handles processing failure using retry and DLQ.
+
