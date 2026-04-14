@@ -131,19 +131,6 @@ Primary payment object.
 | `created_at` | timestamp | Created time |
 | `updated_at` | timestamp | Last state update |
 
-## 4.4 PaymentAttempt
-Each processor call attempt for one payment.
-
-| Field | Type | Description |
-|---|---|---|
-| `attempt_id` | string | Attempt identifier |
-| `payment_id` | string | Parent payment |
-| `processor` | string | Selected processor |
-| `processor_txn_id` | string | External transaction reference |
-| `attempt_no` | int | Retry count |
-| `status` | enum | `sent`, `success`, `declined`, `timeout`, `error` |
-| `error_code` | string | Error type/code |
-| `created_at` | timestamp | Attempt timestamp |
 
 ## 4.5 LedgerEntry (Double-Entry Bookkeeping)
 | Field | Type | Description |
@@ -207,15 +194,6 @@ erDiagram
     string status
     string idempotency_key
   }
-
-  PAYMENT_ATTEMPT {
-    string attempt_id PK
-    string payment_id
-    string processor
-    string processor_txn_id
-    string status
-  }
-
   LEDGER_ENTRY {
     string entry_id PK
     string payment_id
@@ -303,14 +281,7 @@ Response:
 ```
 
 ## 5.3 Capture Authorized Payment
-`POST /v1/payments/{paymentId}/capture`
-
-Request:
-```json
-{
-  "amountMinor": 259900
-}
-```
+`GET /v1/payments/{paymentId}`
 
 Response:
 ```json
@@ -641,3 +612,6 @@ Works well with Kafka/RabbitMQ and microservices.
 Delivery is usually at-least-once.
 Consumers must be idempotent (handle duplicate events safely).
 Common implementation: poll outbox table in batches + retries + DLQ/alerting for repeated failures.
+
+<img width="1654" height="759" alt="Screenshot 2026-04-14 at 11 59 28 PM" src="https://github.com/user-attachments/assets/3d0fd298-da9d-428f-b581-9ab22fd0316a" />
+
