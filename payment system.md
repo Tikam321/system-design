@@ -582,3 +582,62 @@ A production payment gateway should be:
 5. **Auditable** (double-entry ledger + reconciliation + webhook/event logs)
 
 This structure is practical for real systems and strong for system design interviews.
+
+
+Outbox Pattern (Short Notes)
+1) What problem does it solve?
+When a service does both:
+
+DB write (e.g., create order)
+Message publish (e.g., send OrderCreated to Kafka)
+you can get inconsistency if one succeeds and the other fails.
+
+Example failure:
+
+Order saved in DB ✅
+Kafka publish failed ❌
+Result: other services never know the order was created.
+2) Outbox pattern idea
+Write business data and event data in the same DB transaction.
+
+Inside one transaction:
+
+Insert/Update business row (orders)
+Insert event row (outbox_events)
+Commit
+Then a background publisher reads unsent outbox rows and publishes them to Kafka/RabbitMQ.
+
+3) Why it works
+Atomicity at DB level: either both rows commit or none.
+If broker is down, event is still stored in DB.
+Publisher can retry until success.
+4) Flow diagram
+Client -> Order Service
+Order Service -> DB Transaction:
+  - write order
+  - write outbox event
+Commit
+
+Background Outbox Publisher:
+  - read unsent outbox rows
+  - publish to Kafka
+  - mark row as SENT
+5) Simple example
+Business use case
+User places an order.
+
+Transaction
+orders: (order_id=101, status='CREATED')
+outbox_events: (event_id='e1', event_type='OrderCreated', payload='{order_id:101}', status='PENDING')
+Commit succeeds.
+
+Background job
+Picks event_id='e1'
+Publishes to Kafka topic order-events
+Updates outbox row status to SENT
+6) Key interview points
+Outbox pattern avoids dual-write inconsistency.
+Works well with Kafka/RabbitMQ and microservices.
+Delivery is usually at-least-once.
+Consumers must be idempotent (handle duplicate events safely).
+Common implementation: poll outbox table in batches + retries + DLQ/alerting for repeated failures.
