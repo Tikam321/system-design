@@ -615,3 +615,21 @@ Common implementation: poll outbox table in batches + retries + DLQ/alerting for
 
 <img width="1654" height="759" alt="Screenshot 2026-04-14 at 11 59 28 PM" src="https://github.com/user-attachments/assets/3d0fd298-da9d-428f-b581-9ab22fd0316a" />
 
+# Additional discussion
+1. retry storm(thundering herd)
+- we will use exponential jitter to reduce load on the payment svc
+- what is expoenntial backoff
+- Exponential backoff means retrying a failed request with increasing delay.
+
+- Example:
+
+- 1st retry → 1 sec
+- 2nd retry → 2 sec
+- 3rd retry → 4 sec
+- 4th retry → 8 sec
+2. scaling main db
+- as platoform grows to milions payment process then w will follow db partiton
+- we wil partition the db based on the merchent id so that recancilliation svc will fetch the all theapyment of same merchent id from same db .
+3. clock skew in reconcilliation
+- reconcile based on strict time and universtal transaction id.
+
