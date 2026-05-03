@@ -154,7 +154,7 @@ Obj3.breadth = obj1.breadth;
 - Storage area: In string, the String pool serves as the storage area. For StringBuilder and StringBuffer, heap memory is the storage area.
 - Mutability: A String is immutable, whereas both the StringBuilder and StringBuffer are mutable.
 - Efficiency: It is quite slow to work with a String. However, StringBuilder is the fastest in performing operations. The speed of a StringBuffer is more than a String and less than - a StringBuilder. (For example appending a character is fastest in StringBuilder and very slow in String because a new memory is required for the new String with appended character.)
-- Thread-safe: In the case of a threaded environment, StringBuilder and StringBuffer are used whereas a String is not used. However, StringBuilder is suitable for an environment - - - with a single thread, and a StringBuffer is suitable for multiple threads.
+- Thread-safe: In the case of a threaded environment, StringBuilder . However, StringBuilder is suitable for an environment - - - with a single thread, and a StringBuffer is suitable for multiple threads.
 Syntax:
 
 ```java
