@@ -575,4 +575,114 @@ Faster execution
 # Interview Ready Answer
 
 > JVM is the runtime environment that executes Java bytecode and manages memory, garbage collection, and class loading. JIT is a component inside JVM that improves performance by converting frequently executed bytecode into native machine code.
+
+
+# 9. What is Parallel Stream API in Java?
+
+Parallel Stream allows processing stream operations using multiple threads simultaneously to improve performance on large datasets.
+
+It uses:
+
+```text
+ForkJoinPool (Common Thread Pool)
+```
+
+internally.
+
+---
+
+# Example
+
+```java
+List<Integer> numbers =
+    Arrays.asList(1, 2, 3, 4, 5);
+
+numbers.parallelStream()
+       .forEach(System.out::println);
+```
+
+---
+
+# How It Works
+
+```text
+Collection
+   ↓
+Split into multiple parts
+   ↓
+Multiple threads process data in parallel
+   ↓
+Combine results
+```
+
+---
+
+# Sequential vs Parallel Stream
+
+| Sequential Stream | Parallel Stream |
+|---|---|
+| Single thread | Multiple threads |
+| Slower for huge data | Faster for large computations |
+| Ordered execution | Order may vary |
+
+---
+
+# Example
+
+## Sequential
+
+```java
+list.stream()
+```
+
+## Parallel
+
+```java
+list.parallelStream()
+```
+
+or
+
+```java
+list.stream().parallel()
+```
+
+---
+
+# Benefits
+
+- Better CPU utilization
+- Faster processing for large datasets
+- Easy parallelism with minimal code
+
+---
+
+# Drawbacks
+
+- Thread overhead
+- Not always faster
+- Can cause race conditions with shared mutable data
+- Order is not guaranteed
+
+---
+
+# Best Use Cases
+
+- Large datasets
+- CPU-intensive operations
+- Independent tasks
+
+---
+
+# Avoid Using For
+
+- Small datasets
+- Database/API calls
+- Shared mutable state
+
+---
+
+# Interview Ready Answer
+
+> Parallel Stream API in Java allows stream operations to run concurrently using multiple threads through the ForkJoinPool framework. It improves performance for large CPU-intensive tasks by splitting data into multiple parts and processing them in parallel.
    
