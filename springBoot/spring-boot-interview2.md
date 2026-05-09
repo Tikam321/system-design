@@ -258,3 +258,95 @@ User findUser(@Param("email") String email);
 # Interview Ready Answer
 
 > Yes, I have used `@Query` in Spring Data JPA for writing custom JPQL and native SQL queries when derived query methods were not enough. JPQL works with entity objects and fields instead of table names and is useful for complex joins, filtering, and optimized database queries.
+
+# 6. # What Happens When Two HashMap Keys Have Same hashCode? (Collision)
+
+When two keys produce the same hashCode, it is called a collision.
+
+HashMap handles collisions using:
+
+- Linked List (before Java 8)
+- Linked List + Balanced Tree (Java 8+)
+
+---
+
+# Flow Inside HashMap
+
+```text
+1. hashCode() calculates bucket index
+2. Both keys go to same bucket
+3. HashMap uses equals() to differentiate keys
+4. Entries are stored in linked list/tree inside bucket
+```
+
+---
+
+# Example
+
+```java
+Map<String, Integer> map = new HashMap<>();
+
+map.put("FB", 1);
+map.put("Ea", 2);
+```
+
+Both `"FB"` and `"Ea"` have same hashCode.
+
+---
+
+# Internal Structure
+
+```text
+Bucket
+  ↓
+[FB=1] -> [Ea=2]
+```
+
+HashMap traverses bucket and uses:
+
+```java
+equals()
+```
+
+to identify correct key.
+
+---
+
+# In Java 8+
+
+If collisions become too large:
+
+```text
+Linked List → Red Black Tree
+```
+
+This improves lookup performance.
+
+---
+
+# Time Complexity
+
+| Scenario | Complexity |
+|---|---|
+| Normal | O(1) |
+| Heavy Collision (Linked List) | O(n) |
+| Heavy Collision (Tree) | O(log n) |
+
+---
+
+# Important Point
+
+Same `hashCode()` does NOT mean objects are equal.
+
+HashMap always verifies using:
+
+```java
+equals()
+```
+
+---
+
+# Interview Ready Answer
+
+> When two HashMap keys generate the same hashCode, a collision occurs. Both entries are stored in the same bucket, and HashMap uses `equals()` to differentiate between them. Before Java 8, collisions were handled using linked lists, while Java 8+ converts heavily populated buckets into Red-Black Trees for better performance.
+
