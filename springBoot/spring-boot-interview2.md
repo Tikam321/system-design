@@ -417,3 +417,162 @@ JVM Executes
 # Interview Ready Answer
 
 > JVM executes Java bytecode, JRE provides the runtime environment to run Java applications, and JDK provides development tools like compiler and debugger along with JRE to build and run Java applications.
+
+
+# 7. # Primitive vs Non-Primitive Memory Allocation in Java
+
+| Primitive Data Types | Non-Primitive Data Types |
+|---|---|
+| Stores actual value | Stores reference/address |
+| Mostly stored in Stack | Object stored in Heap |
+| Fixed memory size | Dynamic memory size |
+| Faster access | Slightly slower due to reference lookup |
+
+---
+
+# Primitive Example
+
+```java
+int a = 10;
+```
+
+Memory:
+
+```text
+Stack
+-----
+a = 10
+```
+
+Primitive variable directly stores value.
+
+---
+
+# Non-Primitive Example
+
+```java
+String s = new String("Java");
+```
+
+Memory:
+
+```text
+Stack                Heap
+-----                -----
+s  --------->      "Java"
+```
+
+- Stack stores reference
+- Actual object stored in Heap
+
+---
+
+# Important Point
+
+## Primitive Types
+
+Examples:
+
+```text
+int
+char
+double
+boolean
+```
+
+Store actual data directly.
+
+---
+
+## Non-Primitive Types
+
+Examples:
+
+```text
+String
+Array
+Object
+Class
+List
+```
+
+Store object references.
+
+---
+
+# Why Heap for Objects?
+
+Objects are:
+
+- Dynamic
+- Larger in size
+- Shared across methods/threads
+
+Heap allows dynamic memory allocation.
+
+---
+
+# Interview Ready Answer
+
+> Primitive data types store actual values directly and are usually allocated in stack memory, while non-primitive data types store references in stack memory and their actual objects are allocated in heap memory. Primitives have fixed size, whereas objects use dynamic memory allocation.
+
+
+# 8. can you expexplain the internal worlking of springboot at high level ?
+1. application.run()
+2. application.context
+3. component scan
+4. autoconfiguratoin start configuraiton based on the dependency like base on jdbc driver and web dependcy it automatically configure tomcat and datasource obbjct.
+5. start the embedded server
+
+# 9. # Difference Between JVM and JIT
+
+| JVM | JIT |
+|---|---|
+| Java Virtual Machine | Just-In-Time Compiler |
+| Runs Java bytecode | Converts bytecode into native machine code |
+| Part of JRE | Part of JVM |
+| Handles memory, GC, execution | Improves execution performance |
+| Interprets bytecode | Compiles frequently used code |
+
+---
+
+# JVM (Java Virtual Machine)
+
+- Executes Java bytecode
+- Provides platform independence
+- Handles:
+  - Memory management
+  - Garbage Collection
+  - Class loading
+  - Security
+
+---
+
+# JIT (Just-In-Time Compiler)
+
+- Part of JVM
+- Converts frequently executed bytecode into native machine code
+- Improves performance by avoiding repeated interpretation
+
+---
+
+# Flow
+
+```text
+Java Code
+   ↓
+Bytecode (.class)
+   ↓
+JVM
+   ↓
+JIT converts hot code to native machine code
+   ↓
+Faster execution
+```
+
+---
+
+# Interview Ready Answer
+
+> JVM is the runtime environment that executes Java bytecode and manages memory, garbage collection, and class loading. JIT is a component inside JVM that improves performance by converting frequently executed bytecode into native machine code.
+   
