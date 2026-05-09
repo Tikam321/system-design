@@ -142,3 +142,63 @@ count.incrementAndGet();
 # Interview Ready Answer
 
 > No, volatile only guarantees visibility and ordering, not atomicity. Multiple threads updating a volatile variable can still cause race conditions because operations like `count++` are not atomic.
+
+# 4. # Difference Between `==` and `.equals()` in Java
+
+| `==` | `.equals()` |
+|---|---|
+| Compares reference/address | Compares object content/value |
+| Checks if both references point to same object | Checks logical equality |
+| Works for primitives and objects | Mainly used for objects |
+| Can compare memory location | Can compare actual data |
+
+---
+
+# Example with String
+
+```java
+String s1 = new String("Java");
+String s2 = new String("Java");
+
+System.out.println(s1 == s2);        // false
+System.out.println(s1.equals(s2));   // true
+```
+
+---
+
+# Why?
+
+## `==`
+
+Checks:
+
+```text
+Do both variables point to same object?
+```
+
+## `.equals()`
+
+Checks:
+
+```text
+Do both objects contain same value?
+```
+
+---
+
+# Primitive Example
+
+```java
+int a = 10;
+int b = 10;
+
+System.out.println(a == b); // true
+```
+
+For primitives, `==` compares actual values.
+
+---
+
+# Interview Ready Answer
+
+> `==` compares references or memory addresses, while `.equals()` compares object content or logical equality. For primitives, `==` compares actual values, but for objects it checks whether both references point to the same object.
