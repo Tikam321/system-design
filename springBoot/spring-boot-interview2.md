@@ -350,3 +350,70 @@ equals()
 
 > When two HashMap keys generate the same hashCode, a collision occurs. Both entries are stored in the same bucket, and HashMap uses `equals()` to differentiate between them. Before Java 8, collisions were handled using linked lists, while Java 8+ converts heavily populated buckets into Red-Black Trees for better performance.
 
+#7. # Difference Between JVM, JRE, and JDK
+
+| Component | Purpose |
+|---|---|
+| JVM | Runs Java bytecode |
+| JRE | Provides environment to run Java applications |
+| JDK | Provides tools to develop and run Java applications |
+
+---
+
+# JVM (Java Virtual Machine)
+
+- Executes `.class` bytecode
+- Platform dependent
+- Provides:
+  - Memory management
+  - Garbage collection
+  - JIT compilation
+
+---
+
+# JRE (Java Runtime Environment)
+
+- Used to run Java applications
+- Contains:
+  - JVM
+  - Libraries
+  - Runtime files
+
+```text
+JRE = JVM + Libraries
+```
+
+---
+
+# JDK (Java Development Kit)
+
+- Used to develop Java applications
+- Contains:
+  - JRE
+  - Compiler (`javac`)
+  - Debugging tools
+  - Development tools
+
+```text
+JDK = JRE + Development Tools
+```
+
+---
+
+# Simple Flow
+
+```text
+Java Code (.java)
+      ↓
+Compiler (javac)
+      ↓
+Bytecode (.class)
+      ↓
+JVM Executes
+```
+
+---
+
+# Interview Ready Answer
+
+> JVM executes Java bytecode, JRE provides the runtime environment to run Java applications, and JDK provides development tools like compiler and debugger along with JRE to build and run Java applications.
