@@ -202,3 +202,59 @@ For primitives, `==` compares actual values.
 # Interview Ready Answer
 
 > `==` compares references or memory addresses, while `.equals()` compares object content or logical equality. For primitives, `==` compares actual values, but for objects it checks whether both references point to the same object.
+
+# 5. # Have You Used `@Query` (JPQL) in Spring?
+
+Yes, `@Query` is used in Spring Data JPA to write custom JPQL or native SQL queries when derived query methods are not sufficient.
+
+---
+
+# Example Using JPQL
+
+```java
+@Repository
+public interface UserRepository
+        extends JpaRepository<User, Long> {
+
+    @Query("SELECT u FROM User u WHERE u.email = :email")
+    User findByEmail(@Param("email") String email);
+}
+```
+
+---
+
+# Why Use `@Query`?
+
+- Complex queries
+- Custom joins
+- Aggregations
+- Dynamic filtering
+- Better readability for complex logic
+
+---
+
+# JPQL vs Native Query
+
+| JPQL | Native SQL |
+|---|---|
+| Works with Entity names | Works with table names |
+| Database independent | Database specific |
+| Uses object fields | Uses actual column names |
+
+---
+
+# Native Query Example
+
+```java
+@Query(
+ value = "SELECT * FROM users WHERE email = :email",
+ nativeQuery = true
+)
+User findUser(@Param("email") String email);
+```
+
+---
+
+# Interview Ready Answer
+
+> Yes, I have used `@Query` in Spring Data JPA for writing custom JPQL and native SQL queries when derived query methods were not enough. JPQL works with entity objects and fields instead of table names and is useful for complex joins, filtering, and optimized database queries.
