@@ -180,3 +180,147 @@ This prevents:
 ## Interview-Ready Answer
 
 When a waiting or sleeping thread is interrupted, it moves back to the RUNNABLE state and resumes execution, usually by handling `InterruptedException`. The thread is not destroyed automatically. A thread only terminates when its `run()` method finishes or an uncaught exception occurs.
+
+# 2. # What is ReentrantLock?
+
+`ReentrantLock` is a thread synchronization mechanism from:
+
+```java
+java.util.concurrent.locks
+```
+
+It provides more control and flexibility than `synchronized`.
+
+---
+
+# Why Called Reentrant?
+
+Same thread can acquire the same lock multiple times without deadlock.
+
+---
+
+# Example
+
+```java
+import java.util.concurrent.locks.ReentrantLock;
+
+class Counter {
+
+    ReentrantLock lock = new ReentrantLock();
+
+    void increment() {
+
+        lock.lock();
+
+        try {
+            System.out.println("Locked");
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+
+---
+
+# Features of ReentrantLock
+
+---
+
+# 1. lock()
+
+Acquires lock.
+
+```java
+lock.lock();
+```
+
+Thread waits until lock becomes available.
+
+---
+
+# 2. unlock()
+
+Releases lock.
+
+```java
+lock.unlock();
+```
+
+Usually placed inside:
+
+```java
+finally
+```
+
+---
+
+# 3. tryLock()
+
+Attempts to acquire lock without waiting forever.
+
+```java
+if(lock.tryLock()) {
+
+    try {
+
+    } finally {
+        lock.unlock();
+    }
+
+} else {
+    System.out.println("Lock not available");
+}
+```
+
+Useful to avoid deadlocks.
+
+---
+
+# 4. tryLock(timeout)
+
+Waits for specific time.
+
+```java
+lock.tryLock(5, TimeUnit.SECONDS);
+```
+
+---
+
+# 5. lockInterruptibly()
+
+Allows thread interruption while waiting for lock.
+
+```java
+lock.lockInterruptibly();
+```
+
+---
+
+# 6. Fair Locking
+
+```java
+new ReentrantLock(true);
+```
+
+Threads acquire lock in FIFO order.
+
+Prevents thread starvation.
+
+---
+
+# Difference Between synchronized and ReentrantLock
+
+| synchronized | ReentrantLock |
+|---|---|
+| Less flexible | More flexible |
+| No tryLock() | Supports tryLock() |
+| No fairness policy | Supports fairness |
+| Automatically releases lock | Must manually unlock |
+| Simpler syntax | Advanced control |
+
+---
+
+# Interview Ready Answer
+
+> ReentrantLock is an advanced locking mechanism in Java that provides more flexibility than synchronized blocks. It supports features like `tryLock()`, timed lock waiting, interruptible locking, and fair locking. It is called reentrant because the same thread can acquire the same lock multiple times safely.
