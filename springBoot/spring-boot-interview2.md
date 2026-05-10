@@ -685,4 +685,758 @@ list.stream().parallel()
 # Interview Ready Answer
 
 > Parallel Stream API in Java allows stream operations to run concurrently using multiple threads through the ForkJoinPool framework. It improves performance for large CPU-intensive tasks by splitting data into multiple parts and processing them in parallel.
-   
+
+
+# .10  What is Service Discovery?
+
+Service Discovery is a mechanism in microservices architecture that helps services dynamically find and communicate with each other without hardcoding IP addresses or ports.
+
+Since microservice instances scale dynamically, their IPs and ports keep changing.
+
+Service Discovery solves this problem.
+
+---
+
+# Why Do We Need It?
+
+Suppose:
+
+```text
+Order Service → Needs to call Payment Service
+```
+
+But Payment Service instances may:
+
+- Scale up/down
+- Restart
+- Change IP/port
+
+Instead of hardcoding:
+
+```text
+http://192.168.1.10:8080
+```
+
+We use:
+
+```text
+http://PAYMENT-SERVICE
+```
+
+Service discovery resolves actual instance automatically.
+
+---
+
+# How It Works
+
+```text
+1. Service starts
+2. Registers itself with Service Registry
+3. Client asks registry for service location
+4. Registry returns available instances
+5. Client calls service
+```
+
+---
+
+# Architecture
+
+```text
+Order Service
+      ↓
+Service Registry (Eureka)
+      ↓
+Payment Service Instances
+```
+
+---
+
+# Common Service Discovery Tools
+
+| Tool | Usage |
+|---|---|
+| Eureka | Spring Cloud |
+| Consul | HashiCorp |
+| Zookeeper | Distributed systems |
+| Kubernetes DNS | Kubernetes |
+| Nacos | Alibaba ecosystem |
+
+---
+
+# Types of Service Discovery
+
+---
+
+# 1. Client-Side Discovery
+
+Client directly asks registry.
+
+```text
+Client → Registry → Service
+```
+
+Example:
+- Eureka + Ribbon
+
+---
+
+# 2. Server-Side Discovery
+
+Load balancer queries registry.
+
+```text
+Client → Load Balancer → Service
+```
+
+Example:
+- Kubernetes
+- AWS ELB
+
+---
+
+# Spring Boot Eureka Example
+
+---
+
+# Eureka Server
+
+```java
+@EnableEurekaServer
+@SpringBootApplication
+public class EurekaServerApplication {
+
+}
+```
+
+---
+
+# Register Microservice
+
+```properties
+eureka.client.service-url.defaultZone=
+http://localhost:8761/eureka
+```
+
+---
+
+# Enable Discovery Client
+
+```java
+@EnableDiscoveryClient
+@SpringBootApplication
+public class PaymentServiceApplication {
+
+}
+```
+
+---
+
+# Call Service Using Name
+
+```java
+http://PAYMENT-SERVICE/api/pay
+```
+
+---
+
+# Benefits
+
+- Dynamic scaling
+- Fault tolerance
+- Load balancing
+- No hardcoded IPs
+- Better microservice communication
+
+---
+
+# Interview Ready Answer
+
+> Service Discovery is a mechanism used in microservices architecture to dynamically locate service instances without hardcoding IP addresses or ports. Services register themselves with a service registry like Eureka or Consul, and other services discover them using service names. It helps in dynamic scaling, load balancing, and fault-tolerant communication between microservices.
+
+# 11 Authentication and Authorization in Microservices
+
+# Authentication
+
+Authentication verifies:
+
+```text
+Who the user is
+```
+
+Example:
+- Username/password
+- JWT token
+- OAuth login
+
+---
+
+# Authorization
+
+Authorization verifies:
+
+```text
+What the user can access
+```
+
+Example:
+- ADMIN can delete user
+- USER can only view profile
+
+---
+
+# Common Approach in Microservices
+
+Usually implemented using:
+
+- API Gateway
+- JWT Token
+- OAuth2 / Keycloak / Auth Server
+
+---
+
+# Flow
+
+```text
+1. User logs in
+2. Auth Service validates credentials
+3. JWT token generated
+4. Client sends JWT with every request
+5. API Gateway validates token
+6. Request forwarded to microservice
+7. Microservice checks roles/permissions
+```
+
+---
+
+# Architecture
+
+```text
+Client
+   ↓
+API Gateway
+   ↓
+Auth Service
+   ↓
+Microservices
+```
+
+---
+
+# JWT-Based Authentication
+
+## Login
+
+```text
+username + password
+```
+
+## Server Generates
+
+```text
+JWT Token
+```
+
+## Client Sends
+
+```text
+Authorization: Bearer <token>
+```
+
+---
+
+# Authorization Example
+
+```java
+@PreAuthorize("hasRole('ADMIN')")
+public void deleteUser() {
+
+}
+```
+
+Only ADMIN can access API.
+
+---
+
+# Why JWT in Microservices?
+
+- Stateless
+- Scalable
+- No session sharing required
+- Easy service-to-service communication
+
+---
+
+# Common Tools
+
+| Tool | Purpose |
+|---|---|
+| Spring Security | Security framework |
+| JWT | Token authentication |
+| OAuth2 | Authorization framework |
+| Keycloak | Identity provider |
+| API Gateway | Central authentication layer |
+
+---
+
+# Interview Ready Answer
+
+> In microservices, authentication and authorization are commonly implemented using JWT and Spring Security. A dedicated Auth Service validates user credentials and generates JWT tokens. Clients send the token with every request, and the API Gateway or microservices validate the token before processing requests. Authorization is handled using roles and permissions such as `ADMIN` or `USER`.
+
+
+# 12  What Does `alg` Mean in JWT Header?
+
+`alg` means:
+
+```text
+Signing Algorithm
+```
+
+It tells which algorithm was used to create the JWT signature.
+
+---
+
+# Example Header
+
+```json
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+```
+
+Here:
+
+```text
+HS256 = HMAC SHA-256
+```
+
+---
+
+# Why Is It Needed?
+
+When server receives JWT:
+
+1. Reads `alg`
+2. Uses same algorithm + secret key
+3. Recreates signature
+4. Compares with JWT signature
+
+If signatures match:
+
+```text
+Token is valid
+```
+
+Else:
+
+```text
+Token is tampered
+```
+
+---
+
+# How Signature Is Created
+
+```text
+Signature =
+Hash(
+   Header + Payload + SecretKey
+)
+```
+
+using algorithm mentioned in:
+
+```text
+alg
+```
+
+---
+
+# Common JWT Algorithms
+
+| Algorithm | Type |
+|---|---|
+| HS256 | Symmetric |
+| HS512 | Symmetric |
+| RS256 | Asymmetric (Public/Private Key) |
+| ES256 | Elliptic Curve |
+
+---
+
+# Most Common
+
+## HS256
+
+Uses:
+
+```text
+Same secret key
+```
+
+for:
+- Signing
+- Verification
+
+---
+
+# RS256
+
+Uses:
+
+```text
+Private Key → Sign
+Public Key → Verify
+```
+
+More secure for distributed systems.
+
+---
+
+# Interview Ready Answer
+
+> The `alg` field in JWT header represents the signing algorithm used to generate the token signature. When the server creates a JWT, it hashes the header and payload using the specified algorithm and a secret/private key to generate the signature. During verification, the server uses the same algorithm to validate token integrity and detect tampering.
+
+
+# 12. How Do You Secure Communication Between Microservices?
+
+- Use HTTPS/TLS to encrypt communication
+- Use JWT/OAuth2 for authentication and authorization
+- Use API Gateway for centralized security
+- Use mTLS for secure service-to-service authentication
+- Use roles/permissions for access control
+- Use private networks/firewalls for network security
+
+---
+
+# Interview Ready Answer
+
+> Microservice communication is secured using HTTPS/TLS for encryption, JWT or OAuth2 for authentication and authorization, API Gateway for centralized security, and mTLS for secure service-to-service communication.
+
+
+
+# 13. Approach to Blue-Green Deployment
+
+Blue-Green Deployment is a deployment strategy where:
+
+- Blue = Current production environment
+- Green = New version environment
+
+Both environments run simultaneously.
+
+---
+
+# Approach
+
+```text
+1. Deploy new version to Green environment
+2. Test Green environment
+3. Switch traffic from Blue → Green
+4. Monitor application
+5. Rollback to Blue if issues occur
+```
+
+---
+
+# Benefits
+
+- Zero downtime deployment
+- Easy rollback
+- Safer releases
+- Reduced production risk
+
+---
+
+# Commonly Used With
+
+- Load Balancer
+- Kubernetes
+- Docker
+- Cloud platforms (AWS, Azure)
+
+---
+
+# Interview Ready Answer
+
+> In Blue-Green deployment, we maintain two identical environments: Blue for current production and Green for the new release. We deploy and test the new version in Green, then switch traffic using a load balancer. If any issue occurs, traffic can quickly be rolled back to Blue, ensuring zero downtime and safer deployments.
+
+
+# 14. # Example: equals() True but Different hashCode() (Wrong Implementation)
+
+This violates Java contract and breaks HashMap behavior.
+
+---
+
+# Wrong Example
+
+```java
+class User {
+
+    int id;
+
+    User(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        User u = (User) obj;
+
+        return this.id == u.id;
+    }
+
+    @Override
+    public int hashCode() {
+
+        return (int)(Math.random() * 1000);
+    }
+}
+```
+
+---
+
+# Usage
+
+```java
+User a = new User(1);
+User b = new User(1);
+
+System.out.println(a.equals(b)); // true
+
+System.out.println(a.hashCode());
+System.out.println(b.hashCode());
+```
+
+Possible output:
+
+```text
+true
+101
+567
+```
+
+---
+
+# Why Is This Wrong?
+
+Because:
+
+```java
+a.equals(b) == true
+```
+
+but:
+
+```java
+a.hashCode() != b.hashCode()
+```
+
+This breaks HashMap contract.
+
+---
+
+# HashMap Problem
+
+```java
+Map<User, String> map = new HashMap<>();
+
+map.put(a, "Java");
+
+System.out.println(map.get(b));
+```
+
+Output:
+
+```text
+null
+```
+
+Even though:
+
+```java
+a.equals(b) == true
+```
+
+---
+
+# Why null?
+
+Because:
+
+```text
+a → stored in Bucket 101
+b → searched in Bucket 567
+```
+
+HashMap never reaches correct bucket to call `equals()`.
+
+---
+
+# Correct Implementation
+
+```java
+@Override
+public int hashCode() {
+    return Objects.hash(id);
+}
+```
+
+---
+
+# Interview Ready Answer
+
+> If `equals()` returns true but hashCodes are different, HashMap breaks because it uses hashCode to locate the bucket first. If objects go into different buckets, HashMap never reaches the object to compare using `equals()`, causing retrieval failures.
+
+
+# 15. Can Two Equal Objects Have Different hashCode?
+
+No.
+
+If two objects are equal according to `equals()`, then their `hashCode()` must also be equal.
+
+---
+
+# Java Contract
+
+```text
+If a.equals(b) == true
+then
+a.hashCode() == b.hashCode()
+```
+
+Otherwise collections like:
+
+- HashMap
+- HashSet
+
+will not work correctly.
+
+---
+
+# Example
+
+```java
+String s1 = new String("Java");
+String s2 = new String("Java");
+
+System.out.println(s1.equals(s2));     // true
+System.out.println(s1.hashCode() == s2.hashCode()); // true
+```
+
+---
+
+# Important Point
+
+The reverse is NOT mandatory.
+
+```text
+Same hashCode does NOT mean objects are equal
+```
+
+Hash collisions can happen.
+
+---
+
+# Interview Ready Answer
+
+> No, if two objects are equal according to `equals()`, they must return the same `hashCode()`. This is part of the Java hashCode-equals contract required for collections like HashMap and HashSet to function correctly.
+
+# 15. Application Goes Down at 3 AM Due to DB Overload — Actions Taken
+
+# Immediate Actions
+
+## 1. Identify Root Cause
+
+Check:
+- DB CPU usage
+- Memory usage
+- Slow queries
+- Connection pool exhaustion
+- Sudden traffic spike
+- Locks/deadlocks
+
+Use:
+- APM tools
+- DB monitoring dashboards
+- Slow query logs
+
+---
+
+# 2. Stabilize System
+
+Temporarily:
+- Restart failed services if needed
+- Increase DB resources
+- Scale application instances
+- Limit incoming traffic/rate limit
+
+---
+
+# 3. Check Slow Queries
+
+Run:
+
+```sql
+EXPLAIN ANALYZE
+```
+
+on heavy queries.
+
+Look for:
+- Full table scans
+- Missing indexes
+- Expensive joins
+
+---
+
+# 4. Optimize Database
+
+- Add indexes
+- Kill long-running queries
+- Optimize joins
+- Reduce unnecessary reads
+
+---
+
+# 5. Reduce DB Load
+
+Use:
+- Redis caching
+- Read replicas
+- Pagination
+- Batch processing
+
+---
+
+# 6. Check Connection Pool
+
+Verify:
+- HikariCP settings
+- Max pool size
+- Connection leaks
+
+---
+
+# 7. Traffic Handling
+
+If sudden spike:
+- Enable autoscaling
+- Use load balancer
+- Apply circuit breaker/rate limiting
+
+---
+
+# 8. Post-Incident Actions
+
+After recovery:
+- RCA (Root Cause Analysis)
+- Add monitoring/alerts
+- Capacity planning
+- Load testing
+- Query optimization review
+
+---
+
+# Interview Ready Answer
+
+> If the application goes down due to DB overload, I would first stabilize the system by checking database metrics, slow queries, connection pool usage, and traffic spikes. I would optimize heavy queries using EXPLAIN ANALYZE, add indexes if needed, and reduce DB load using caching or read replicas. I would also scale services temporarily, monitor recovery, and later perform RCA and capacity planning to prevent future incidents.
