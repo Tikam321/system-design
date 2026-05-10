@@ -1005,3 +1005,85 @@ Gateway routes requests accordingly.
 # Interview Ready Answer
 
 > Strangler Pattern is a gradual migration strategy used to convert a monolithic application into microservices incrementally instead of rewriting the entire system at once. New microservices slowly replace monolith modules over time, reducing migration risk, downtime, and deployment failures.
+
+# 12. # What Happens If We Place return Statement in finally Block?
+
+If a `return` statement is placed inside the `finally` block, it overrides any return value or exception from the `try` or `catch` block.
+
+This is generally considered bad practice.
+
+---
+
+# Example
+
+```java
+public class Test {
+
+    public static int test() {
+
+        try {
+            return 10;
+        } finally {
+            return 20;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println(test());
+    }
+}
+```
+
+---
+
+# Output
+
+```text
+20
+```
+
+---
+
+# Why?
+
+Execution Flow:
+
+```text
+1. try returns 10
+2. finally executes before method exits
+3. finally returns 20
+4. Original return gets overridden
+```
+
+---
+
+# Exception Case
+
+```java
+try {
+    throw new RuntimeException();
+} finally {
+    return;
+}
+```
+
+Here exception gets suppressed.
+
+This makes debugging difficult.
+
+---
+
+# Important Point
+
+```text
+finally block always executes before method completes
+```
+
+unless JVM crashes or System.exit() is called.
+
+---
+
+# Interview Ready Answer
+
+> If we place a return statement inside the finally block, it overrides any return value or exception from the try or catch block. This can suppress exceptions and create unexpected behavior, so using return inside finally is considered bad practice.
