@@ -398,4 +398,20 @@ A good URL shortener design is:
 4. **Scalable** (sharding + stateless services)
 5. **Observable and secure** (analytics + abuse prevention)
 
-If you present it in this sequence during interview, your design will sound structured, practical, and production-oriented.
+### URL Shortener Choice: 301 vs 302 (Caching Behavior)
+
+* **Use 301 (Permanent Redirect):** 
+  * **Caching:** The browser caches the **Destination URL** mapped to the **Short URL**. 
+  * **Behavior:** On repeat clicks, the browser skips your server completely and loads the destination page directly.
+  * **Best For:** High speed, low server load, and preserving SEO value.
+
+* **Use 302 (Temporary Redirect):** 
+  * **Caching:** The browser **does not cache** either URL.
+  * **Behavior:** Every single click hits your server first before redirecting the user.
+  * **Best For:** 100% accurate click analytics and real-time user tracking.
+
+| Status Code | Does Browser Cache? | What is Cached? | Subsequent Clicks Hit Your Server? |
+| :--- | :--- | :--- | :--- |
+| **301 Permanent** | ✅ Yes | The Short URL $\rightarrow$ Destination URL mapping | ❌ No (Loads directly from cache) |
+| **302 Temporary** | ❌ No | Nothing | ✅ Yes (Every single time) |
+
