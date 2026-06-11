@@ -171,6 +171,35 @@ If we partition by user there's 1 channel per user.
 - If we partition by user there's 1 channel per user. Each chat server subscribes to 1 channel per connected user. When a message is sent, the server has to - publish to 99 channels (one for each other participant).
 - In this scenario, we save on the number of publishes by having channels partitioned by chat.
 
+### Real-Time Chat Partitioning Strategy
+
+#### 1. Scenario: Direct Messages (1:1 Chats)
+* **Setup:** 1 user has 250 separate 1:1 chat threads.
+* **Partition by Chat:** 
+  * *Downside:* Server must maintain **250 subscriptions per user** to listen for messages. 
+  * *Impact:* Wastes massive server memory and CPU tracking empty channels.
+* **Partition by User:** 
+  * *Upside:* Server maintains only **1 subscription per user** (their personal inbox).
+  * *Impact:* Highly efficient; messages are published directly to the recipient's single user channel.
+* **🏆 Winner:** **Partition by User** (Standard for WhatsApp/iMessage).
+
+#### 2. Scenario: Large Groups (100+ Users)
+* **Setup:** 100 users inside a single large group chat.
+* **Partition by Chat:** 
+  * *Upside:* The chat acts as a single broadcast station. 
+  * *Impact:* **1 single publish** reaches all 100 listeners instantly.
+* **Partition by User:** 
+  * *Downside:* The server must duplicate the message and **publish 99 times** (one for each user's inbox).
+  * *Impact:* Creates a massive "fan-out" bottle neck that chokes the message broker.
+* **🏆 Winner:** **Partition by Chat** (Standard for Slack/Discord).
+
+#### Quick Reference
+
+| Architecture | Pub/Sub Connections (Reads) | Message Fan-out (Writes) | Best Used For |
+| :--- | :--- | :--- | :--- |
+| **By User** | **Low** (1 per active user) | **High** on groups | 1:1 DMs / Messaging |
+| **By Chat** | **High** (Users $\times$ Active Rooms) | **Low** (1 write per message) | Large Groups / Channels |
+
 # 2) What do we do to handle multiple clients for a given user?
 
 - To this point we've assumed a user has a single device, but many users have multiple devices: a phone, a tablet, a desktop or laptop - maybe even a work computer.
