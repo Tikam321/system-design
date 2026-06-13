@@ -103,8 +103,9 @@ Once the above step is done, the JVM executes the optimized code directly instea
 14. What is the main objective of garbage collection?
 - The main objective of this process is to free up the memory space occupied by the unnecessary and unreachable objects during the Java program execution by deleting thos unreachable objects.
 - This ensures that the memory resource is used efficiently, but it provides no guarantee that there would be sufficient memory for the program execution.
+- many JVMS use the generational GC meaning new object go to young generations and old refferenced object go to old Gen.
 
-15. What is a ClassLoader?
+- 15. What is a ClassLoader?
 - Java Classloader is the program that belongs to JRE (Java Runtime Environment). The task of ClassLoader is to load the required classes and interfaces to the JVM when required. 
 - Example- To get input from the console, we require the scanner class. And the Scanner class is loaded by the ClassLoader.
 
