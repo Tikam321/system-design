@@ -106,6 +106,7 @@ Once the above step is done, the JVM executes the optimized code directly instea
 - many JVMS use the generational GC meaning new object go to young generations and old refferenced object go to old Gen.
 - Minor GC frequenctly happen younf gen so that newly created objects diw quickly.
 - Major or full GC can performance more because it cleans old gen and can pause the application.
+- In production we care about the GC because too many pauses means latency issues so we  tune  heap size  and choose right GC.
 
 - 15. What is a ClassLoader?
 - Java Classloader is the program that belongs to JRE (Java Runtime Environment). The task of ClassLoader is to load the required classes and interfaces to the JVM when required. 
