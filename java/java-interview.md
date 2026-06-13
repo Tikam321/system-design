@@ -848,3 +848,131 @@ employees.sort(
 
 **Comparator**
 > "Someone else knows how to compare me."
+
+
+86. EXPLAIN ANALYZE - Quick Interview Notes
+
+## What is EXPLAIN ANALYZE?
+
+Shows:
+
+* Query execution plan
+* Index usage
+* Join strategy
+* Actual execution time
+
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM employees WHERE salary > 100000;
+```
+
+---
+
+## Seq Scan (Full Table Scan) 🚨
+
+```text
+Seq Scan on employees
+```
+
+**Meaning:** Scans every row in the table.
+
+**Fix:** Add an index.
+
+```sql
+CREATE INDEX idx_salary ON employees(salary);
+```
+
+---
+
+## Index Scan ✅
+
+```text
+Index Scan using idx_salary
+```
+
+**Meaning:** Uses index to find matching rows directly.
+
+**Good Sign:** Faster query execution.
+
+---
+
+## Nested Loop Join 🚨
+
+```text
+Nested Loop
+```
+
+**Meaning:** Compares rows one by one.
+
+```java
+for(order)
+   for(customer)
+```
+
+**Issue:** Slow for large tables.
+
+---
+
+## Hash Join ✅
+
+```text
+Hash Join
+```
+
+**Meaning:** Builds a hash table (like HashMap) for fast lookups.
+
+**Good For:** Large datasets.
+
+---
+
+## Merge Join ✅
+
+```text
+Merge Join
+```
+
+**Meaning:** Joins sorted datasets.
+
+**Benefit:** Very efficient for large tables.
+
+---
+
+## Rows Removed by Filter 🚨
+
+```text
+Rows Removed by Filter: 9000000
+```
+
+**Meaning:** Millions of rows scanned but discarded.
+
+**Fix:** Better indexes or WHERE clause.
+
+---
+
+## Actual Time
+
+```text
+Actual Time: 250ms
+```
+
+**Meaning:** Real query execution time.
+
+**Goal:** Reduce this value.
+
+---
+
+## Interview Cheat Sheet
+
+| Plan              | Meaning               | Action          |
+| ----------------- | --------------------- | --------------- |
+| Seq Scan          | Full Table Scan       | Add Index       |
+| Index Scan        | Using Index           | Good            |
+| Nested Loop       | Expensive Join        | Check Indexes   |
+| Hash Join         | HashMap Join          | Good            |
+| Merge Join        | Sorted Join           | Very Good       |
+| Rows Removed High | Too Much Data Scanned | Optimize Filter |
+| Actual Time High  | Slow Query            | Investigate     |
+
+## 1-Line Interview Answer
+
+> I use EXPLAIN ANALYZE to check for Seq Scans, expensive joins, high filtered rows, and missing indexes, then optimize the query and compare the new execution plan.
