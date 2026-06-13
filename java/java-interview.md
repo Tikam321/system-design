@@ -702,3 +702,11 @@ Spring Boot = opinionated, faster way to build Spring apps.
 - The response should include not just the list, but also metadata like totalElements, totalPages, pageNumber, and pageSize.
 - For large datasets, offset pagination can get slow, so sometimes we use keyset pagination using lastSeend or createdAt.
 - The goal is stable performance and predictable response size
+
+83. What is lazy loading in Hibernate and when should you use it?
+- Lazy loading means Hibernate doesn't load the related entity immediately — it loads it only when you access it.
+- For example, a User might have Orders, but orders won't be fetched until you call user.getOrders().
+- This helps performance if you don't always need child data.
+- But if you loop over many users and access orders, you can hit the N+1 query problem.
+- To avoid that, we use fetch joins, entity graphs, or switch specific relations to eager only when needed.
+- In real APls, lazy loading is common, but you must control how data is fetched to avoid performance issues.
