@@ -23,3 +23,6 @@ So on one core:
 
 only one thread runs at an instant,
 but time slicing shares CPU fairly across many threads.
+
+# 1. what is The JMM Model ?
+- stands for the Java Memory Model.It is a core part of the Java Virtual Machine (JVM) specification that defines how threads interact through memory. It  sets the rules for when changes made by one thread to shared variables become visible to other threads, ensuring predictable behavior in multi-threaded (concurrent) programs.
