@@ -710,3 +710,12 @@ Spring Boot = opinionated, faster way to build Spring apps.
 - But if you loop over many users and access orders, you can hit the N+1 query problem.
 - To avoid that, we use fetch joins, entity graphs, or switch specific relations to eager only when needed.
 - In real APls, lazy loading is common, but you must control how data is fetched to avoid performance issues.
+
+84. How does @Transactional work in Spring?
+- @Transactional wraps your method in a transaction using an AOP proxy.
+- So when the method starts, Spring opens a transaction, and if it completes successfully, it commits.
+- If an exception happens, Spring decides whether to rollback - by default, it rolls back on unchecked exceptions.
+- If you want rollback on checked exceptions too, you configure rollbackFor.
+- Also, self-invocation is a common gotcha: calling a transactional method from the same class can bypass the proxy.
+- In real projects, we use it mostly on service methods where multiple
+- DB operations must succeed together.
