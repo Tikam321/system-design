@@ -104,6 +104,8 @@ Once the above step is done, the JVM executes the optimized code directly instea
 - The main objective of this process is to free up the memory space occupied by the unnecessary and unreachable objects during the Java program execution by deleting thos unreachable objects.
 - This ensures that the memory resource is used efficiently, but it provides no guarantee that there would be sufficient memory for the program execution.
 - many JVMS use the generational GC meaning new object go to young generations and old refferenced object go to old Gen.
+- Minor GC frequenctly happen younf gen so that newly created objects diw quickly.
+- Major or full GC can performance more because it cleans old gen and can pause the application.
 
 - 15. What is a ClassLoader?
 - Java Classloader is the program that belongs to JRE (Java Runtime Environment). The task of ClassLoader is to load the required classes and interfaces to the JVM when required. 
