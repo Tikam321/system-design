@@ -695,3 +695,10 @@ Spring Boot = opinionated, faster way to build Spring apps.
 - ExecutorService is a Java concurrency interface that manages a pool of worker threads and executes tasks asynchronously.
 - It abstracts manual thread creation, supports submit() with Future results, and provides lifecycle control like shutdown() and awaitTermination(). It improves scalability, thread reuse, and cleaner concurrent code.
 
+82. How do you implement pagination in a REST API?
+- In REST APIs, pagination is usually done using query params like page and size.
+- So client sends something like /users?page=0&size=20, and backend returns a slice of results.
+- In Spring Data JPA, we use Pageable and PageRequest to fetch paged data efficiently.
+- The response should include not just the list, but also metadata like totalElements, totalPages, pageNumber, and pageSize.
+- For large datasets, offset pagination can get slow, so sometimes we use keyset pagination using lastSeend or createdAt.
+- The goal is stable performance and predictable response size
