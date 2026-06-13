@@ -719,3 +719,132 @@ Spring Boot = opinionated, faster way to build Spring apps.
 - Also, self-invocation is a common gotcha: calling a transactional method from the same class can bypass the proxy.
 - In real projects, we use it mostly on service methods where multiple
 - DB operations must succeed together.
+
+85. # Comparable vs Comparator - Interview Notes
+
+## What is Comparable?
+
+- Used for **natural/default sorting**.
+- Implemented by the class itself.
+- Located in `java.lang`.
+- Method:
+
+```java
+int compareTo(T obj)
+```
+
+Example:
+
+```java
+class Employee implements Comparable<Employee> {
+    int id;
+
+    @Override
+    public int compareTo(Employee e) {
+        return Integer.compare(this.id, e.id);
+    }
+}
+```
+
+Usage:
+
+```java
+Collections.sort(employees);
+```
+
+---
+
+## What is Comparator?
+
+- Used for **custom sorting**.
+- Implemented outside the class.
+- Located in `java.util`.
+- Method:
+
+```java
+int compare(T o1, T o2)
+```
+
+Example:
+
+```java
+Comparator<Employee> byName =
+    Comparator.comparing(Employee::getName);
+```
+
+Usage:
+
+```java
+employees.sort(byName);
+```
+
+---
+
+## Key Differences
+
+| Comparable | Comparator |
+|------------|------------|
+| `compareTo()` | `compare()` |
+| `java.lang` | `java.util` |
+| Natural sorting | Custom sorting |
+| Inside class | Outside class |
+| One sorting strategy | Multiple sorting strategies |
+
+---
+
+## When to Use?
+
+### Comparable
+When an object has a **single natural order**.
+
+Examples:
+- Employee ID
+- Student Roll Number
+
+### Comparator
+When you need **multiple sorting criteria**.
+
+Examples:
+- Employee by Name
+- Employee by Salary
+- Employee by Experience
+
+---
+
+## Java 8 Examples
+
+Sort by Name:
+
+```java
+employees.sort(
+    Comparator.comparing(Employee::getName)
+);
+```
+
+Sort by Salary Desc:
+
+```java
+employees.sort(
+    Comparator.comparing(Employee::getSalary)
+              .reversed()
+);
+```
+
+Sort by Salary then Name:
+
+```java
+employees.sort(
+    Comparator.comparing(Employee::getSalary)
+              .thenComparing(Employee::getName)
+);
+```
+
+---
+
+## Interview One-Liner
+
+**Comparable**
+> "I know how to compare myself."
+
+**Comparator**
+> "Someone else knows how to compare me."
