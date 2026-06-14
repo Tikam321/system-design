@@ -45,3 +45,11 @@
 - Common causes include static collections, unclosed resources, caching mistakes, or listener leaks.
 - GC logs also help understand memory pressure patterns.
 - Fix usually involves removing stale references or redesigning caching/ resource lifecycle.
+
+# 7. How do you design a fault-tolerant microservice system?
+First, we design for failure - assume services will fail at some point.
+Circuit breakers like Resilience4j prevent cascading failures.
+Retries with exponential backoff handle temporary issues.
+Bulkheads isolate failures so one service doesn't take down everything.
+Async messaging improves resilience by decoupling services.
+And proper monitoring, alerts, and fallback strategies ensure system stability under stress.
