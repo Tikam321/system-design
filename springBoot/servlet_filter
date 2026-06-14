@@ -1,0 +1,180 @@
+# Filter vs Interceptor in Spring Boot
+
+## Key Difference
+
+| Filter                                 | Interceptor                               |
+| -------------------------------------- | ----------------------------------------- |
+| Part of Servlet API                    | Part of Spring MVC                        |
+| Executes before DispatcherServlet      | Executes after DispatcherServlet          |
+| Can modify Request/Response            | Mainly handles request processing         |
+| Used for Authentication, CORS, Logging | Used for Authorization, Auditing, Logging |
+
+---
+
+## Request Flow
+
+```text
+Client Request
+      |
+      v
+Filter
+      |
+      v
+DispatcherServlet
+      |
+      v
+Interceptor
+      |
+      v
+Controller
+      |
+      v
+Interceptor
+      |
+      v
+Response
+```
+
+---
+
+## Filter
+
+### Purpose
+
+Used for:
+
+* Authentication
+* JWT Validation
+* CORS
+* Request/Response Logging
+
+### Example
+
+```java
+@Component
+public class LoggingFilter implements Filter {
+
+    @Override
+    public void doFilter(
+            ServletRequest request,
+            ServletResponse response,
+            FilterChain chain)
+            throws IOException, ServletException {
+
+        System.out.println("Before Request");
+
+        chain.doFilter(request, response);
+
+        System.out.println("After Response");
+    }
+}
+```
+
+---
+
+## Interceptor
+
+### Purpose
+
+Used for:
+
+* Authorization
+* Audit Logging
+* Performance Monitoring
+* Controller-specific Logic
+
+### Example
+
+```java
+@Component
+public class LoggingInterceptor
+        implements HandlerInterceptor {
+
+    @Override
+    public boolean preHandle(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Object handler) {
+
+        System.out.println("Before Controller");
+        return true;
+    }
+}
+```
+
+---
+
+## Interceptor Lifecycle
+
+### preHandle()
+
+Runs before Controller.
+
+```java
+public boolean preHandle(...)
+```
+
+### postHandle()
+
+Runs after Controller execution.
+
+```java
+public void postHandle(...)
+```
+
+### afterCompletion()
+
+Runs after response is sent.
+
+```java
+public void afterCompletion(...)
+```
+
+---
+
+## Why Spring Security Uses Filters?
+
+Authentication must happen before Spring MVC.
+
+```text
+Request
+   |
+Security Filter Chain
+   |
+DispatcherServlet
+   |
+Controller
+```
+
+If authentication fails:
+
+```text
+401 Unauthorized
+```
+
+Controller is never reached.
+
+---
+
+## When to Use?
+
+### Use Filter
+
+* JWT Authentication
+* CORS
+* Compression
+* Request/Response Modification
+* Global Logging
+
+### Use Interceptor
+
+* Authorization
+* Audit Logging
+* Performance Monitoring
+* Controller-level Validation
+
+---
+
+## Interview One-Liner
+
+> Filter works at the Servlet container level and executes before Spring MVC, making it suitable for authentication and request/response processing. Interceptor works at the Spring MVC level and executes before and after controller execution, making it suitable for authorization, logging, and auditing.
