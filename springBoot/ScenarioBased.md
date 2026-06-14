@@ -29,3 +29,11 @@
 - We cache things like master data, configuration, user profile lookups, and expensive computed responses.
 - But you must handle cache invalidation properly - otherwise you serve stale data.
 - So we define TTLs, eviction rules, and clear cach
+
+# 5 .What is the difference between Cl and CD in DevOps?
+- Cl stands for Continuous Integration - code is merged frequently and automatically built and tested.
+- This ensures integration issues are caught early.
+- CD can mean Continuous Delivery or Continuous Deployment depending on organization.
+- Delivery means code is always ready for release but manual approval may exist.
+- Deployment means fully automated release pipeline to production.
+- CI/CD pipelines reduce manual errors and speed up release cycles significantly.
