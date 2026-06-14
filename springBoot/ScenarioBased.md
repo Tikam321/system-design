@@ -21,3 +21,11 @@
 - For microservices, distributed tracing is key - tools like OpenTelemetry with Jaeger/Zipkin help track a request end-to-end.
 - We set up alerts on SLA metrics like p95 latency and error spikes.
 - And we also monitor JVM health - GC pauses, heap usage, thread counts — because that's where many issues start.
+
+# 4. What is caching and how have you implemented it in projects?
+- Caching means storing frequently used data in faster storage so you don't hit database or external services again and again.
+- In Spring Boot, a common approach is using Spring Cache with annotations like @Cacheable, @CachePut, and @CacheEvict.
+- For simple cases, in-memory cache works, but in real production we mostly use Redis for distributed caching.
+- We cache things like master data, configuration, user profile lookups, and expensive computed responses.
+- But you must handle cache invalidation properly - otherwise you serve stale data.
+- So we define TTLs, eviction rules, and clear cach
