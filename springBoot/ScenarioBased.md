@@ -13,3 +13,11 @@
 - This gives eventual consistency rather than strict ACID across services.
 - We also use outbox pattern so DB changes and events are reliably published together.
 - In real projects, distributed consistency is handled through design, not through one big transaction across services.
+
+# 3. How do you monitor application performance in production?
+- In production, we monitor metrics like CPU, memory, request latency, error rate, and throughput.
+- We usually expose metrics using Micrometer in Spring Boot and send them to Prometheus/Grafana.
+- We also track application logs centrally using ELK or similar, so debugging is fast.
+- For microservices, distributed tracing is key - tools like OpenTelemetry with Jaeger/Zipkin help track a request end-to-end.
+- We set up alerts on SLA metrics like p95 latency and error spikes.
+- And we also monitor JVM health - GC pauses, heap usage, thread counts — because that's where many issues start.
