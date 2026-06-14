@@ -705,10 +705,18 @@ Multiple sorting options possible.
 
 > Comparable is used for natural/default sorting and requires the class itself to implement `compareTo()`. Comparator is used for custom sorting and implements the `compare()` method externally, allowing multiple sorting strategies.
 
-# 10. What is the difference between PUT and POST in REST APIs?
+# 9. What is the difference between PUT and POST in REST APIs?
 - POST is used to create a new resource, and the server usually generates the resource ID.
 - PUT is used to update a resource when the client already knows the resource identifier.
 - POST is not idempotent - if you send the same POST twice, you may create two records.
 - PUT is idempotent - sending the same request multiple times results in the same final state.
 - Example: POST /users creates a new user, PUT /users/101 updates user 101.
 - In real APIs, we use POST for create, PUT for full update, and PATCH for partial update.
+
+# 10. What is optimistic vs pessimistic locking in JPA?
+- Optimistic locking assumes conflicts are rare, so it doesn't lock rows immediately.
+- It uses a version field like @Version, and when you update, it checks if version changed.
+- If another transaction updated the row, you get an OptimisticLockException and you can retry.
+- Pessimistic locking locks the row when you read it using SELECT FOR UPDATE.
+- It prevents others from updating until your transaction completes, but it can reduce throughput.
+- In real systems, we prefer optimistic locking for high throughput, and pessimistic only when conflicts are frequent and critical.
