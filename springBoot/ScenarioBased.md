@@ -38,7 +38,7 @@
 - Deployment means fully automated release pipeline to production.
 - CI/CD pipelines reduce manual errors and speed up release cycles significantly.
 
-#6. How do you debug memory leaks in Java applications?
+# 6. How do you debug memory leaks in Java applications?
 - First, I monitor heap usage over time - if it keeps growing, it's a red flag.
 - Tools like VisualVM, JProfiler, or Java Flight Recorder help analyze heap dumps.
 - Heap dump analysis shows objects retaining memory unnecessarily.
