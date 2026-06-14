@@ -37,3 +37,11 @@
 - Delivery means code is always ready for release but manual approval may exist.
 - Deployment means fully automated release pipeline to production.
 - CI/CD pipelines reduce manual errors and speed up release cycles significantly.
+
+#6. How do you debug memory leaks in Java applications?
+- First, I monitor heap usage over time - if it keeps growing, it's a red flag.
+- Tools like VisualVM, JProfiler, or Java Flight Recorder help analyze heap dumps.
+- Heap dump analysis shows objects retaining memory unnecessarily.
+- Common causes include static collections, unclosed resources, caching mistakes, or listener leaks.
+- GC logs also help understand memory pressure patterns.
+- Fix usually involves removing stale references or redesigning caching/ resource lifecycle.
