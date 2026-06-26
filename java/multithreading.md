@@ -96,6 +96,102 @@ System.out.println(future.get());
 
 > Use `execute()` when you don't need a result. Use `submit()` when you need a result, want to cancel the task, or handle exceptions through `Future`.
 
+# Exception Handling: `execute()` vs `submit()`
+
+## `execute()`
+
+* Returns **void**.
+* If the task throws an exception, it is **immediately propagated** to the thread's `UncaughtExceptionHandler`.
+* The exception is typically printed to the console.
+
+### Example
+
+```java
+ExecutorService executor = Executors.newSingleThreadExecutor();
+
+executor.execute(() -> {
+    throw new RuntimeException("Something went wrong!");
+});
+
+executor.shutdown();
+```
+
+**Output**
+
+```text
+Exception in thread "pool-1-thread-1"
+java.lang.RuntimeException: Something went wrong!
+```
+
+---
+
+## `submit()`
+
+* Returns a **Future**.
+* If the task throws an exception, it is **captured and stored inside the `Future`**.
+* The exception is thrown only when `future.get()` is called.
+
+### Example
+
+```java
+ExecutorService executor = Executors.newSingleThreadExecutor();
+
+Future<?> future = executor.submit(() -> {
+    throw new RuntimeException("Something went wrong!");
+});
+
+try {
+    future.get();
+} catch (ExecutionException e) {
+    System.out.println(e.getCause());
+}
+
+executor.shutdown();
+```
+
+**Output**
+
+```text
+java.lang.RuntimeException: Something went wrong!
+```
+
+---
+
+## Execution Flow
+
+### `execute()`
+
+```text
+Task
+  ↓
+Exception Thrown
+  ↓
+UncaughtExceptionHandler
+  ↓
+Stack Trace Printed
+```
+
+### `submit()`
+
+```text
+Task
+  ↓
+Exception Thrown
+  ↓
+Stored in Future
+  ↓
+future.get()
+  ↓
+ExecutionException
+```
+
+---
+
+## Interview Answer
+
+> **`execute()`** immediately propagates unchecked exceptions to the executing thread's `UncaughtExceptionHandler`.
+> **`submit()`** captures exceptions inside the returned `Future`, and they are rethrown as an `ExecutionException` only when `future.get()` is invoked.
+
 ---
 
 # 4. What happens when the Thread Pool is Full?
