@@ -1,6 +1,6 @@
 # questions 1
-1. how aop intercepts  and handle exceptions  the exceptions ( so when target method throw exceptoin then we cna run advice using @AfterThrowing).
-2. what defaultmethod  and diff between default method and static meethod (reltaed java 8 features).
+1. how aop intercepts and handle exceptions  the exceptions ( so when target method throw exceptoin then we cna run advice using @AfterThrowing).
+2. what defaultmethod and diff between default method and static meethod (reltaed java 8 features).
 4. java 8 features .
 5. what is the diff between Error and Excption .
 6. diff betweenoverriding and overloading (contructor overloading)
@@ -13,9 +13,9 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 12. etcd
 
 # questions 2 ->
-- what is qa gateways
+- what is qa gateways (in jenkins)
 - what is thread pooling
 - what is the diff between reactive and mvc programming
 - what is react api context
-- what is monitoring tool (to measure peroformance )
+- what is monitoring tool (to measure performance)
 - 
