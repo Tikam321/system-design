@@ -11,6 +11,8 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 10. in which kubernates componentn we will store secretes (secrete component) llok for it
 11. what is the diff betrween waterfall and agile methodology.
 12. etcd
+13. what is mostly used collections from collections framework
+14. 
 
 # questions 2 ->
 - what is qa gateways (in jenkins)
