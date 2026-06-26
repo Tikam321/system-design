@@ -1,0 +1,5 @@
+#  what is threading
+- Thread Pooling is a technique where a fixed or configurable set of worker threads is created in advance and reused to execute multiple tasks.
+-  Instead of creating a new thread for every request, tasks are submitted to a queue, and an available thread processes them.
+-  This reduces thread creation overhead, improves performance, limits resource usage, and enables applications to handle many concurrent tasks efficiently.
+-  In Java, thread pools are managed using the ExecutorService framework.
