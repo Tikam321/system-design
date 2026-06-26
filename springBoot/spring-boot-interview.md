@@ -94,6 +94,136 @@ The IoC (Inversion of Control) Container is the core component of Spring respons
 - Setter Injection: The IOC container will inject the dependent bean object into the target bean object by calling the setter method.
 - Constructor Injection: The IOC container will inject the dependent bean object into the target bean object by calling the target bean constructor.
 - Field Injection: The IOC container will inject the dependent bean object into the target bean object by Reflection API.
+# Constructor Injection vs Field Injection (Unit Testing)
+
+## Why Constructor Injection is Better?
+
+* No Spring Context required
+* Easy to inject mock objects
+* No Reflection
+* Fast unit tests
+* Recommended for production
+
+### Constructor Injection
+
+```java
+@Service
+public class UserService {
+
+    private final UserRepository repository;
+
+    public UserService(UserRepository repository) {
+        this.repository = repository;
+    }
+}
+```
+
+### Unit Test
+
+```java
+UserRepository mockRepo = Mockito.mock(UserRepository.class);
+
+when(mockRepo.findName()).thenReturn("Tikam");
+
+UserService service = new UserService(mockRepo);
+
+assertEquals("Tikam", service.getUserName());
+```
+
+No `@SpringBootTest`, no Spring container.
+
+---
+
+## Field Injection
+
+```java
+@Service
+public class UserService {
+
+    @Autowired
+    private UserRepository repository;
+}
+```
+
+Since there is no constructor, the dependency must be injected manually.
+
+### Using ReflectionTestUtils
+
+```java
+UserRepository mockRepo = Mockito.mock(UserRepository.class);
+
+UserService service = new UserService();
+
+ReflectionTestUtils.setField(
+    service,
+    "repository",
+    mockRepo
+);
+```
+
+`ReflectionTestUtils` uses Java Reflection to inject the mock object.
+
+---
+
+## Using @InjectMocks
+
+```java
+@Mock
+private UserRepository repository;
+
+@InjectMocks
+private UserService service;
+```
+
+Internally, Mockito creates:
+
+```java
+UserService service = new UserService(repository);
+```
+
+If no constructor exists, Mockito tries:
+
+1. Constructor Injection ✅
+2. Setter Injection
+3. Field Injection (Reflection)
+
+---
+
+## Using @SpringBootTest
+
+```java
+@SpringBootTest
+class UserServiceTest {
+
+    @MockBean
+    private UserRepository repository;
+
+    @Autowired
+    private UserService service;
+}
+```
+
+* Starts the Spring Container
+* `@MockBean` replaces the real bean with a Mockito mock
+* Best for Integration Tests
+
+---
+
+## Comparison
+
+| Approach                    | Spring Context | Reflection     | Recommended        |
+| --------------------------- | -------------- | -------------- | ------------------ |
+| Constructor Injection       | ❌              | ❌              | ✅ Best             |
+| @InjectMocks                | ❌              | Only if needed | ✅ Good             |
+| ReflectionTestUtils         | ❌              | ✅ Yes          | ⚠️ Workaround      |
+| @SpringBootTest + @MockBean | ✅              | ❌              | ✅ Integration Test |
+
+---
+
+## Interview Answer
+
+> Constructor Injection is preferred because dependencies can be passed directly as mock objects without starting the Spring container. Mockito's `@InjectMocks` automatically creates the object and injects mocks, preferring constructor injection first. For field injection, Mockito or `ReflectionTestUtils` uses reflection to inject dependencies. `@SpringBootTest` with `@MockBean` is typically used for integration testing, whereas constructor injection is ideal for fast and isolated unit tests.
+
 
 12. Where do we define properties in the Spring Boot application?
 You can define both application and Spring boot-related properties into a file called application.properties.
