@@ -19,5 +19,5 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 - what is thread pooling
 - what is the diff between reactive and mvc programming
 - what is react api context
-- what is monitoring tool (to measure performance)
+- what is monitoring tool (to measure performance lighthouse)
 - 
