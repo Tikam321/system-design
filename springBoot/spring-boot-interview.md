@@ -87,7 +87,7 @@ public class MyApplication {
 - Spring Boot actuator “/Beans” is used to get the list of all the spring beans in your application.
 
 10. What is an IOC container?
-IoC Container is a framework for implementing automatic dependency injection. It manages object creation and its life-time and also injects dependencies into the class.
+The IoC (Inversion of Control) Container is the core component of Spring responsible for creating, configuring, and managing the lifecycle of beans. Instead of developers creating objects using the new keyword, the IoC container creates the objects and injects their dependencies automatically using Dependency Injection. This promotes loose coupling, improves maintainability, and makes the application easier to test.
 
 11. What is dependency Injection?
 - The process of injecting dependent bean objects into target bean objects is called dependency injection.
