@@ -3,3 +3,493 @@
 -  Instead of creating a new thread for every request, tasks are submitted to a queue, and an available thread processes them.
 -  This reduces thread creation overhead, improves performance, limits resource usage, and enables applications to handle many concurrent tasks efficiently.
 -  In Java, thread pools are managed using the ExecutorService framework.
+
+# 2. what is executor service 
+- ExecutorService is a high-level Java concurrency framework that manages a pool of threads and executes asynchronous tasks.
+- ExecutorService is a Java concurrency framework that manages thread pools and executes asynchronous tasks. It abstracts thread creation, scheduling, reuse, and lifecycle management, making concurrent programming more efficient and scalable.
+
+- # Thread Pooling - Interview Questions & Answers
+
+## 1. What is Thread Pooling?
+
+### Answer
+
+A **Thread Pool** is a collection of pre-created, reusable worker threads that execute multiple tasks. Instead of creating a new thread for every task, tasks are submitted to the pool and executed by available threads.
+
+### Benefits
+
+* Reuses threads instead of creating new ones.
+* Reduces thread creation overhead.
+* Improves application performance.
+* Controls resource utilization.
+* Prevents excessive thread creation.
+
+---
+
+# 2. What is ExecutorService?
+
+### Answer
+
+`ExecutorService` is a Java concurrency framework that manages thread pools and executes asynchronous tasks. It abstracts thread creation, scheduling, execution, and lifecycle management.
+
+Instead of manually creating threads:
+
+```java
+new Thread(() -> {
+    // task
+}).start();
+```
+
+Use:
+
+```java
+ExecutorService executor = Executors.newFixedThreadPool(5);
+
+executor.submit(() -> {
+    System.out.println("Hello");
+});
+```
+
+### Common Methods
+
+```java
+execute(Runnable task)
+submit(Runnable task)
+submit(Callable<T> task)
+shutdown()
+shutdownNow()
+awaitTermination()
+```
+
+### Interview Answer
+
+> ExecutorService is a high-level concurrency framework that manages a pool of reusable threads and executes asynchronous tasks efficiently.
+
+---
+
+# 3. Difference between execute() and submit()
+
+| execute()                        | submit()                        |
+| -------------------------------- | ------------------------------- |
+| Returns `void`                   | Returns `Future<T>`             |
+| Accepts only `Runnable`          | Accepts `Runnable` & `Callable` |
+| Cannot return result             | Can return result               |
+| Exception immediately propagated | Exception stored in `Future`    |
+
+### execute()
+
+```java
+executor.execute(() -> {
+    System.out.println("Hello");
+});
+```
+
+### submit()
+
+```java
+Future<Integer> future = executor.submit(() -> 100);
+
+System.out.println(future.get());
+```
+
+### Interview Answer
+
+> Use `execute()` when you don't need a result. Use `submit()` when you need a result, want to cancel the task, or handle exceptions through `Future`.
+
+---
+
+# 4. What happens when the Thread Pool is Full?
+
+When:
+
+* All worker threads are busy.
+* The task queue is full.
+* Maximum pool size has been reached.
+
+The executor applies a **Rejection Policy**.
+
+Execution Flow:
+
+```
+New Task
+   |
+Core Thread Available?
+   |
+  No
+   |
+Queue Full?
+   |
+  No → Add to Queue
+   |
+Queue Full?
+   |
+Can create Max Thread?
+   |
+Yes → Create New Thread
+   |
+Already at Maximum?
+   |
+Reject Task
+```
+
+---
+
+# 5. What is ThreadPoolExecutor?
+
+### Answer
+
+`ThreadPoolExecutor` is the core implementation of `ExecutorService` and provides complete control over thread pool behavior.
+
+```java
+ThreadPoolExecutor executor =
+new ThreadPoolExecutor(
+    2,
+    5,
+    60,
+    TimeUnit.SECONDS,
+    new LinkedBlockingQueue<>(10)
+);
+```
+
+### Constructor Parameters
+
+* `corePoolSize`
+* `maximumPoolSize`
+* `keepAliveTime`
+* `TimeUnit`
+* `BlockingQueue`
+* `ThreadFactory`
+* `RejectedExecutionHandler`
+
+### Interview Answer
+
+> ThreadPoolExecutor provides fine-grained control over thread creation, queue management, thread lifetime, and rejection policies.
+
+---
+
+# 6. How do you decide the optimal thread pool size?
+
+### CPU-Bound Tasks
+
+Examples:
+
+* Image processing
+* Encryption
+* Compression
+
+Formula:
+
+```
+Thread Pool Size ≈ Number of CPU Cores
+```
+
+### IO-Bound Tasks
+
+Examples:
+
+* Database calls
+* REST APIs
+* Kafka
+* File operations
+
+Formula:
+
+```
+Threads = CPU Cores × (1 + Wait Time / Compute Time)
+```
+
+### Example
+
+```
+CPU Cores = 8
+Wait Time = 900ms
+Compute Time = 100ms
+
+Threads = 8 × (1 + 9)
+        = 80
+```
+
+### Interview Answer
+
+> CPU-bound tasks typically use a thread pool close to the number of CPU cores, while I/O-bound tasks can benefit from a larger pool because threads spend much of their time waiting.
+
+---
+
+# 7. What is a Rejection Policy?
+
+When the thread pool and queue are both full, `ThreadPoolExecutor` decides how to handle new tasks using a rejection policy.
+
+## AbortPolicy (Default)
+
+```java
+new ThreadPoolExecutor.AbortPolicy();
+```
+
+Throws:
+
+```
+RejectedExecutionException
+```
+
+---
+
+## CallerRunsPolicy
+
+The thread submitting the task executes it.
+
+```
+Main Thread
+     |
+Executes Task
+```
+
+Useful for applying backpressure.
+
+---
+
+## DiscardPolicy
+
+Silently discards the new task.
+
+```
+Task Lost
+```
+
+---
+
+## DiscardOldestPolicy
+
+Removes the oldest queued task and inserts the new task.
+
+```
+Queue
+
+A
+B
+C
+
+↓
+
+Remove A
+
+↓
+
+Insert D
+```
+
+### Interview Answer
+
+> A rejection policy defines how a ThreadPoolExecutor handles new tasks when the thread pool and queue are both full.
+
+---
+
+# 8. Runnable vs Callable
+
+| Runnable                        | Callable                     |
+| ------------------------------- | ---------------------------- |
+| No return value                 | Returns a value              |
+| Cannot throw checked exceptions | Can throw checked exceptions |
+| execute() / submit()            | submit()                     |
+
+Runnable:
+
+```java
+Runnable task = () -> {
+    System.out.println("Running...");
+};
+```
+
+Callable:
+
+```java
+Callable<Integer> task = () -> 100;
+```
+
+---
+
+# 9. What is Future?
+
+`Future` represents the result of an asynchronous computation.
+
+Example:
+
+```java
+Future<Integer> future = executor.submit(() -> 10);
+
+Integer result = future.get();
+```
+
+### Common Methods
+
+```java
+future.get();
+future.cancel(true);
+future.isDone();
+future.isCancelled();
+```
+
+### Limitation
+
+* `get()` blocks the calling thread.
+* Cannot easily chain multiple asynchronous tasks.
+
+---
+
+# 10. CompletableFuture vs Future
+
+| Future                | CompletableFuture      |
+| --------------------- | ---------------------- |
+| Blocking              | Non-blocking           |
+| Cannot chain tasks    | Supports task chaining |
+| Manual combination    | Built-in composition   |
+| Limited functionality | Rich asynchronous API  |
+
+Example:
+
+```java
+CompletableFuture
+    .supplyAsync(() -> "Hello")
+    .thenApply(String::toUpperCase)
+    .thenAccept(System.out::println);
+```
+
+---
+
+# 11. What is a BlockingQueue?
+
+A `BlockingQueue` stores tasks waiting to be executed.
+
+Worker threads retrieve tasks from the queue.
+
+Common implementations:
+
+* LinkedBlockingQueue
+* ArrayBlockingQueue
+* PriorityBlockingQueue
+* SynchronousQueue
+
+---
+
+# 12. shutdown() vs shutdownNow()
+
+| shutdown()                | shutdownNow()                  |
+| ------------------------- | ------------------------------ |
+| Stops accepting new tasks | Stops accepting new tasks      |
+| Completes queued tasks    | Attempts to stop running tasks |
+| Graceful shutdown         | Immediate shutdown             |
+
+Example:
+
+```java
+executor.shutdown();
+```
+
+```java
+executor.shutdownNow();
+```
+
+---
+
+# 13. How does ThreadPoolExecutor work internally?
+
+Execution flow:
+
+```
+Submit Task
+      |
+Core Thread Available?
+      |
+Yes → Execute
+      |
+No
+      |
+Queue Available?
+      |
+Yes → Queue Task
+      |
+No
+      |
+Maximum Thread Available?
+      |
+Yes → Create Thread
+      |
+No
+      |
+Reject Task
+```
+
+---
+
+# 14. How do you monitor Thread Pool health?
+
+Common metrics:
+
+* Active Thread Count
+* Pool Size
+* Queue Size
+* Completed Task Count
+* Largest Pool Size
+* Task Rejection Count
+
+Useful with:
+
+* Spring Boot Actuator
+* Micrometer
+* Prometheus
+* Grafana
+
+---
+
+# 15. What happens if a task throws an exception?
+
+### execute()
+
+```java
+executor.execute(() -> {
+    throw new RuntimeException();
+});
+```
+
+Exception is propagated to the thread's uncaught exception handler.
+
+---
+
+### submit()
+
+```java
+Future<?> future = executor.submit(() -> {
+    throw new RuntimeException();
+});
+
+future.get();
+```
+
+The exception is wrapped inside an `ExecutionException` and is thrown when `get()` is called.
+
+---
+
+# 16. How would you design a Thread Pool for a REST API?
+
+### Best Practices
+
+* Use a fixed-size `ThreadPoolExecutor`.
+* Size the pool based on CPU and I/O characteristics.
+* Use a bounded queue.
+* Configure a suitable rejection policy (e.g., `CallerRunsPolicy`).
+* Monitor pool metrics.
+* Avoid creating threads manually.
+* Gracefully shut down the executor during application shutdown.
+
+---
+
+# Interview Summary
+
+## Key Takeaways
+
+* Use `ExecutorService` instead of manually creating threads.
+* Prefer `ThreadPoolExecutor` for production applications.
+* Choose thread pool size based on workload (CPU-bound vs I/O-bound).
+* Understand the difference between `execute()` and `submit()`.
+* Know all four rejection policies.
+* Understand `Future` and `CompletableFuture`.
+* Monitor thread pools in production to avoid bottlenecks.
