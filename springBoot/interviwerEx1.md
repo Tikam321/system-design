@@ -1,4 +1,4 @@
-# questions
+# questions 1
 1. how aop intercepts  and handle exceptions  the exceptions ( so when target method throw exceptoin then we cna run advice using @AfterThrowing).
 2. what defaultmethod  and diff between default method and static meethod (reltaed java 8 features).
 4. java 8 features .
@@ -9,4 +9,13 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 8. spring security
 9. ai prompts
 10. in which kubernates componentn we will store secretes (secrete component) llok for it
-11. 
+11. what is the diff betrween waterfall and agile methodology.
+12. etcd
+
+# questions 2 ->
+- what is qa gateways
+- what is thread pooling
+- what is the diff between reactive and mvc programming
+- what is react api context
+- what is monitoring tool (to measure peroformance )
+- 
