@@ -12,7 +12,7 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 11. what is the diff betrween waterfall and agile methodology.
 12. etcd
 13. what is mostly used collections from collections framework
-14. 
+14. what is optional nullable what is the different methodds like .get ,. ispresent()
 
 # questions 2 ->
 - what is qa gateways (in jenkins)
