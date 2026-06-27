@@ -390,3 +390,33 @@ In short:
 Use controlled inputs when React needs to manage and validate the value
 Use uncontrolled inputs for simple, one-time data collection
 Avoid switching between the two, as it leads to bugs and warnings
+
+17. # `export default` vs `export`
+
+| `export default`           | `export`                      |
+| -------------------------- | ----------------------------- |
+| One export per file        | Multiple exports per file     |
+| Import without `{}`        | Import with `{}`              |
+| Can rename while importing | Name must match (or use `as`) |
+
+### Example
+
+```javascript
+// Export
+export default UserService;
+export const PI = 3.14;
+
+// Import
+import UserService from "./UserService";
+import { PI } from "./constants";
+```
+
+### Interview Answer
+
+> `export default` is used for a **single primary export**, while `export` is used for **multiple named exports**.
+
+### Follow-up Questions
+
+* Can a file have both `default` and named exports?
+* Why do named imports use `{}`?
+* Can we rename a named import?
