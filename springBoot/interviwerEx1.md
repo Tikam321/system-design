@@ -35,3 +35,5 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 answer -> In our application, authentication is done using JWT, but authorization is database-driven. After validating the JWT, we query the database to determine which companies and sub organization codes the logged-in admin is authorized to manage. These permissions are then used by the service layer to ensure the admin can only view or modify policies for the assigned companies and sub-organizations.
 7. expalain the request flow from frontend to backend.
 8. can you handle can expetion at the consumer level.
+9. what is the diff bewteen primary and qualifies
+10. 
