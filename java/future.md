@@ -46,3 +46,36 @@ System.out.println(future.join());
 ## Interview Answer
 
 > **CompletableFuture** is a Java 8 class that extends `Future` to support **asynchronous, non-blocking programming**. It enables task chaining, combining multiple asynchronous operations, and better exception handling without blocking the calling thread.
+>
+> # CompletableFuture: `join()` vs `get()`
+
+## Difference
+
+| `join()`                                   | `get()`                                                          |
+| ------------------------------------------ | ---------------------------------------------------------------- |
+| Throws **unchecked** `CompletionException` | Throws **checked** `ExecutionException` & `InterruptedException` |
+| No `try-catch` required                    | Must handle checked exceptions                                   |
+| Commonly used with `CompletableFuture`     | Defined in `Future` interface                                    |
+
+---
+
+## Example
+
+```java
+CompletableFuture<String> future =
+    CompletableFuture.supplyAsync(() -> "Hello");
+
+// join()
+String result = future.join();
+
+// get()
+String result2 = future.get();
+```
+
+---
+
+## Interview Answer
+
+> `join()` and `get()` both wait for a task to complete and return its result. The key difference is exception handling: `join()` throws an unchecked `CompletionException`, while `get()` throws checked exceptions (`ExecutionException` and `InterruptedException`). Therefore, `join()` is preferred when working with `CompletableFuture`.
+
+---
