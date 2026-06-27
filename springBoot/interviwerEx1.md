@@ -14,7 +14,7 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 13. what is mostly used collections from collections framework
 14. what is optional nullable what is the different methodds like .get ,. ispresent()
 15. what is deadlock how to avoid deadlock
-16. which 
+16. which data strcuture comes under collection framework.
 
 # questions 2 ->
 - what is qa gateways (in jenkins)
