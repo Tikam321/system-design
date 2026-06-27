@@ -309,6 +309,88 @@ Threads = 8 × (1 + 9)
 
 > CPU-bound tasks typically use a thread pool close to the number of CPU cores, while I/O-bound tasks can benefit from a larger pool because threads spend much of their time waiting.
 
+# Why is Thread Pool Size ≈ Number of CPU Cores for CPU-Bound Tasks?
+
+## What are CPU-Bound Tasks?
+
+CPU-bound tasks spend most of their time performing computations rather than waiting for I/O.
+
+**Examples:**
+
+* Image processing
+* Encryption/Decryption
+* Data compression
+* Mathematical calculations
+
+---
+
+## Why choose the number of CPU cores?
+
+A CPU can execute only **one thread per core at a time** (ignoring technologies like Hyper-Threading).
+
+For example, on a **4-core CPU**:
+
+```text
+Core 1 → Thread 1
+Core 2 → Thread 2
+Core 3 → Thread 3
+Core 4 → Thread 4
+```
+
+All cores remain busy, maximizing CPU utilization.
+
+---
+
+## What if we create more threads?
+
+Example: **4 CPU cores, 20 threads**
+
+```text
+20 Threads
+    │
+    ▼
+Scheduler
+    │
+    ▼
+4 CPU Cores
+```
+
+Only **4 threads** can run simultaneously.
+
+The remaining **16 threads** wait in the ready queue.
+
+The operating system repeatedly switches between threads (**context switching**), which introduces overhead without increasing throughput.
+
+---
+
+## Why is Context Switching Expensive?
+
+When switching from one thread to another, the CPU must:
+
+* Save the current thread's state (registers, program counter).
+* Load the next thread's state.
+* Flush/reload CPU caches if necessary.
+
+This overhead consumes CPU cycles that could have been used for actual computation.
+
+---
+
+## Rule of Thumb
+
+```text
+CPU-Bound Tasks
+
+Thread Pool Size ≈ Number of CPU Cores
+```
+
+This keeps all cores busy while minimizing unnecessary context switching.
+
+---
+
+## Interview Answer
+
+> For CPU-bound tasks, the thread pool size is typically set close to the number of CPU cores because these tasks continuously use the CPU. Creating more threads than available cores doesn't improve performance, as only one thread can execute per core at a time. Extra threads simply increase context switching overhead, reducing overall efficiency.
+
 ---
 
 # 7. What is a Rejection Policy?
