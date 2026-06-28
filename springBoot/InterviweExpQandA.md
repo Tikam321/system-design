@@ -201,3 +201,6 @@ Lazy loading delays the loading of objects until they are actually required. It 
 ### 11. What is the `@Transactional` annotation?
 
 `@Transactional` is used to define a transaction boundary. All database operations inside a transactional method execute as a single unit of work. If all operations succeed, the transaction is committed; if an exception occurs, Spring rolls back the transaction, ensuring data consistency.
+
+### 12.  speing bean life cycle
+Spring first creates the bean by calling its constructor. Then it injects all the required dependencies. After dependency injection, it executes the initialization logic, such as a method annotated with @PostConstruct. Once initialization is complete, the bean is ready to use. Finally, when the application context is closed, Spring invokes methods annotated with @PreDestroy before removing the bean."
