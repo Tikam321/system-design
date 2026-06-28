@@ -25,7 +25,7 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 - what is monitoring tool (to measure performance lighthouse)
 - different types of plugins for jenkins available
 
-# questions
+# questions 3 ->
 1. what is lazy loading
 2. what is cicd pipeline
 3. which cloud platoform you are using (for deplyment  -> ec2 instance, cloudwatch -> monitoring tool)
