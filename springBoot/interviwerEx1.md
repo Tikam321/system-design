@@ -36,4 +36,6 @@ answer -> In our application, authentication is done using JWT, but authorizatio
 7. expalain the request flow from frontend to backend.
 8. can you handle can expetion at the consumer level.
 9. what is the diff bewteen primary and qualifies
-10. 
+10. what is lazy loading
+11. wht is transactoin annotatoin
+12. 
