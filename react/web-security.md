@@ -3,7 +3,6 @@
 ---
 
 # 1. XSS (Cross-Site Scripting)
-s
 ## What is XSS?
 
 XSS is an attack where an attacker injects malicious JavaScript into a trusted web page. When another user opens that page, the script executes in the user's browser and may steal sensitive information or perform unauthorized actions.
