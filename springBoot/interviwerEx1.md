@@ -38,4 +38,4 @@ answer -> In our application, authentication is done using JWT, but authorizatio
 9. what is the diff bewteen primary and qualifies
 10. what is lazy loading
 11. wht is transactoin annotatoin
-12. 
+12. one request goes from one microservice to downstream microservices but downstream microservice is not working then waht will you do?
