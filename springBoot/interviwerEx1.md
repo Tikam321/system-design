@@ -16,6 +16,7 @@ does multiple thread craeted or not ( thread will be created by calling t.start(
 15. what is deadlock how to avoid deadlock
 16. which data strcuture comes under collection framework.
 17. which data strcuture comes unde reht colleciton library in java.
+18. how class level and object level lock works?
 
 # questions 2 ->
 - what is qa gateways (in jenkins)
