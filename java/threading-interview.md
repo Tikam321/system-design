@@ -324,3 +324,194 @@ Prevents thread starvation.
 # Interview Ready Answer
 
 > ReentrantLock is an advanced locking mechanism in Java that provides more flexibility than synchronized blocks. It supports features like `tryLock()`, timed lock waiting, interruptible locking, and fair locking. It is called reentrant because the same thread can acquire the same lock multiple times safely.
+
+# Java Synchronization: Object-Level Lock vs Class-Level Lock
+
+## What is a Lock?
+
+Every Java object has an **intrinsic lock (monitor)**. A thread must acquire this lock before entering a synchronized block or method.
+
+---
+
+# Object-Level Lock
+
+### Definition
+
+An object-level lock is acquired when a thread enters a **synchronized instance method** or a `synchronized(this)` block.
+
+```java
+class Printer {
+
+    synchronized void print() {
+        // Object-level lock
+    }
+}
+```
+
+Equivalent to:
+
+```java
+class Printer {
+
+    void print() {
+        synchronized (this) {
+            // critical section
+        }
+    }
+}
+```
+
+### Key Points
+
+* Lock belongs to the **object instance (`this`)**.
+* Every object has its **own lock**.
+* Different objects have different locks.
+* Threads accessing different objects can execute concurrently.
+
+---
+
+# Class-Level Lock
+
+### Definition
+
+A class-level lock is acquired when a thread enters a **static synchronized method** or a `synchronized(ClassName.class)` block.
+
+```java
+class Printer {
+
+    static synchronized void print() {
+        // Class-level lock
+    }
+}
+```
+
+Equivalent to:
+
+```java
+class Printer {
+
+    static void print() {
+        synchronized (Printer.class) {
+            // critical section
+        }
+    }
+}
+```
+
+### Key Points
+
+* Lock belongs to the **Class object (`Printer.class`)**.
+* Only **one class lock** exists per loaded class.
+* Shared by all instances of the class.
+* Only one thread can execute any static synchronized method at a time.
+
+---
+
+# Object Lock vs Class Lock
+
+| Feature          | Object-Level Lock               | Class-Level Lock              |
+| ---------------- | ------------------------------- | ----------------------------- |
+| Lock Owner       | `this` (object)                 | `ClassName.class`             |
+| Used By          | `synchronized` instance methods | `static synchronized` methods |
+| Number of Locks  | One per object                  | One per class                 |
+| Multiple Objects | Different locks                 | Same class lock               |
+| Concurrency      | Higher                          | Lower                         |
+
+---
+
+# Do They Block Each Other?
+
+### Same Object
+
+```java
+Demo d = new Demo();
+
+Thread-1 -> d.m1();
+Thread-2 -> d.m2();
+```
+
+```java
+synchronized void m1() {}
+synchronized void m2() {}
+```
+
+✅ **Yes**
+
+Both methods use the same object lock (`this`).
+
+---
+
+### Different Objects
+
+```java
+Demo d1 = new Demo();
+Demo d2 = new Demo();
+
+Thread-1 -> d1.m1();
+Thread-2 -> d2.m2();
+```
+
+✅ **No**
+
+Each object has its own lock.
+
+---
+
+### Object Lock vs Class Lock
+
+```java
+class Demo {
+
+    synchronized void m1() {}
+
+    static synchronized void m2() {}
+}
+```
+
+```java
+Demo d = new Demo();
+
+Thread-1 -> d.m1();
+Thread-2 -> Demo.m2();
+```
+
+✅ **No Blocking**
+
+Reason:
+
+* `m1()` acquires the **object lock (`d`)**
+* `m2()` acquires the **class lock (`Demo.class`)**
+
+These are two different monitors.
+
+---
+
+# Interview Answer (30 Seconds)
+
+**Object-Level Lock**
+
+* Acquired by synchronized instance methods or `synchronized(this)`.
+* Lock belongs to the object instance.
+* Each object has its own lock.
+* Different objects can execute synchronized methods concurrently.
+
+**Class-Level Lock**
+
+* Acquired by static synchronized methods or `synchronized(ClassName.class)`.
+* Lock belongs to the `Class` object.
+* Only one class lock exists.
+* All instances share the same lock.
+
+**Important:** Object-level and class-level locks are different monitors, so they **do not block each other**.
+
+---
+
+# Memory Trick
+
+* **Instance method** → **`this`** → **Object Lock**
+* **Static method** → **`ClassName.class`** → **Class Lock**
+
+Remember:
+
+> **One Object = One Lock**
+> **One Class = One Class Lock**
