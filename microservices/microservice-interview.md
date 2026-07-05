@@ -37,6 +37,14 @@ Single responsibility per service, independent deployability, decentralized data
 
 **3. What problems does microservices architecture solve?**
 It solves slow release cycles in large monoliths, scaling bottlenecks (you can't scale just one heavy module), team coordination overhead, and technology lock-in — by letting teams build, deploy, and scale services independently.
+Microservices solve:
+
+Independent deployability — each service ships on its own schedule.
+Independent scalability — scale only what needs it.
+Fault isolation — one service failing doesn't take down others.
+Technology flexibility — each service picks its own best-fit tech.
+Clear ownership — one team, one service, one business capability.
+Easier evolution — small, loosely coupled services are easier to change or replace.
 
 **4. What are the disadvantages/challenges of microservices?**
 Increased operational complexity, distributed system problems (network latency, partial failure), data consistency challenges, harder debugging/tracing, more infrastructure overhead (service discovery, API gateways, CI/CD per service), and organizational overhead.
