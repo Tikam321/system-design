@@ -758,5 +758,89 @@ void modify(StringBuilder sb) {
 | Pass-by-value | Java always passes references by value |
 
 ---
+### 108. # Java Collections Framework - Interview Notes
+
+## Java Collections Hierarchy
+
+```text
+                           Iterable
+                               │
+                          Collection
+        ┌──────────────────────┼──────────────────────┐
+        │                      │                      │
+      List                   Set                  Queue
+        │                      │                      │
+        ├── ArrayList          ├── HashSet           ├── PriorityQueue
+        ├── LinkedList         ├── LinkedHashSet     └── ArrayDeque
+        ├── Vector             └── TreeSet
+        └── Stack (Legacy)
+
+Map (Separate Hierarchy)
+│
+├── HashMap
+├── LinkedHashMap
+├── TreeMap
+├── Hashtable (Legacy)
+└── ConcurrentHashMap
+```
+
+> **Note:** `Map` is **not** a subtype of the `Collection` interface. It belongs to a separate hierarchy because it stores **key-value pairs**, whereas `Collection` stores individual elements.
+
+---
+
+## Q1. What is the Java Collections Framework?
+
+The **Java Collections Framework (JCF)** provides interfaces and classes to efficiently store, manipulate, and retrieve groups of objects.
+
+---
+
+## Q2. What is a List?
+
+- Ordered collection
+- Allows duplicates
+- Supports indexing
+
+| Collection | Best Use |
+|------------|----------|
+| ArrayList | Fast random access |
+| LinkedList | Frequent insert/delete |
+| Vector | Thread-safe (Legacy) |
+| Stack | LIFO (Legacy) |
+
+---
+
+## Q3. What is a Set?
+
+- Stores unique elements
+- No duplicates
+
+| Collection | Best Use |
+|------------|----------|
+| HashSet | Fast lookup |
+| LinkedHashSet | Maintains insertion order |
+| TreeSet | Maintains sorted order |
+
+---
+
+## Q4. What is a Queue?
+
+- Follows **FIFO (First In, First Out)**
+
+| Collection | Best Use |
+|------------|----------|
+| PriorityQueue | Priority-based processing |
+| ArrayDeque | Queue + Stack implementation |
+
+---
+
+## Q5. What is a Map?
+
+- Stores **key-value pairs**
+- Keys are unique
+- Values can be duplicated
+
+| Collection | Best Use |
+|------------|----------|
+| HashMap |
 
 *Good luck with your interview! Be ready to explain the "why" behind each answer, not just the definition — interviewers often follow up with "why does Java do it this way?"*
