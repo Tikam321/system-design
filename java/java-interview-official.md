@@ -53,6 +53,92 @@ a == b;        // false (different objects)
 a.equals(b);   // true (same content)
 ```
 
+# QNAI.md
+
+## Q: What is the difference between `==` and `equals()`?
+
+**Answer:**
+
+- `==`
+  - Primitives → compares values.
+  - Objects → compares references (memory).
+
+- `equals()`
+  - Default (`Object`) → compares references.
+  - Overridden (`String`, Wrapper, Record, Custom Class) → compares values.
+
+---
+
+## Q: Does `equals()` always compare values?
+
+**Answer:**
+
+No. `Object.equals()` compares references. Value comparison happens only if the class overrides it.
+
+---
+
+## Q: Why do we override `equals()`?
+
+**Answer:**
+
+To compare objects based on their fields instead of memory addresses.
+
+---
+
+## Q: What is the default implementation of `Object.equals()`?
+
+**Answer:**
+
+```java
+public boolean equals(Object obj) {
+    return this == obj;
+}
+```
+
+---
+
+## Q: How does `String.equals()` work?
+
+**Answer:**
+
+1. Check `this == obj`
+2. Check object type
+3. Compare length
+4. Compare characters
+
+---
+
+## Q: Why check `this == obj` first?
+
+**Answer:**
+
+It's a fast path. If both references are the same, they're already equal.
+
+---
+
+## Q: What is the standard `equals()` implementation?
+
+**Answer:**
+
+```java
+@Override
+public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+
+    Employee other = (Employee) obj;
+    return id == other.id &&
+           Objects.equals(name, other.name);
+}
+```
+
+---
+
+## Q: One-line interview answer?
+
+**Answer:**
+
+> `==` compares references for objects and values for primitives. `equals()` compares references by default, but overridden implementations compare object values.
 ### 6. What is the difference between `String`, `StringBuilder`, and `StringBuffer`?
 
 | | `String` | `StringBuilder` | `StringBuffer` |
