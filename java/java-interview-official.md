@@ -52,9 +52,6 @@ String b = new String("hello");
 a == b;        // false (different objects)
 a.equals(b);   // true (same content)
 ```
-
-# QNAI.md
-
 ## Q: What is the difference between `==` and `equals()`?
 
 **Answer:**
