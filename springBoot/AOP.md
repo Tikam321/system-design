@@ -1,4 +1,4 @@
-````markdown
+
 # Spring AOP (Aspect-Oriented Programming)
 
 ## What is AOP?
@@ -695,4 +695,5 @@ AspectJ performs **bytecode weaving**, so even internal method calls are interce
 - Spring uses **CGLIB Proxy** if no interface exists.
 - Internal method calls (`this.method()`) bypass the Proxy, so Advice does not execute.
 - `@Around` is the most powerful Advice because it can execute code before and after the method, modify arguments, modify return values, retry execution, or even skip method execution.
-````
+
+
