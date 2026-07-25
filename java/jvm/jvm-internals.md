@@ -437,3 +437,6 @@ Organized by category so you can drill weak spots. Short, interview-ready answer
 - Know one crisp example each for `volatile` vs `synchronized` — interviewers often want a real code snippet, not just theory.
 
 Good luck — you've got the map now.
+
+gfg link -> https://www.geeksforgeeks.org/java/how-jvm-works-jvm-architecture/ 
+for more ref 
