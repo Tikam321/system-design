@@ -1718,3 +1718,93 @@ public class StatefulAuthenticationFilter extends OncePerRequestFilter {
 | POST   | /oauth/token    | Login → get stateful tokens (`grant_type=password`)      |
 | POST   | /oauth/token    | Refresh stateful tokens (`grant_type=refresh_token`)     |
 | POST   | /oauth/revoke   | Logout / revoke stateful token                            |
+
+
+# Auth API Quick Reference — What Happens at Each Endpoint
+
+## JWT (Stateless) Flow
+
+### `POST /auth/register`
+- Check `login_id` doesn't already exist
+- Hash password with BCrypt
+- Insert `users` row
+- Insert `login_info` row
+- Return 201
+
+### `POST /jwt/v1/token` (Login)
+- Verify password (BCrypt match)
+- Check `login_info` isn't locked
+- Generate JWT access token (RSA-signed, AES-encrypted claims, ~1hr TTL)
+- Generate JWT refresh token (~7 days TTL)
+- **Upsert** into `oauth_jwt_tkn` by `device_id`
+- Return both tokens
+
+### `POST /jwt/v1/token/refresh`
+- Verify refresh token's signature + expiry locally
+- Look up `oauth_jwt_tkn` row **by `device_id`** (not by token value)
+- Compare submitted token to stored token
+  - Match → generate **new** access + refresh tokens → **update** the same row → return new tokens
+  - Mismatch → flag `attacked_yn = true`, reject (replay detected)
+
+### `POST /jwt/v1/revoke` (Logout)
+- Delete the `oauth_jwt_tkn` row for that `device_id`
+- Refresh token is now dead — no new access tokens can be issued
+- **Note**: access token already issued stays valid until its own natural expiry, since request validation never touches the DB
+
+### Every other API request (Order / Inventory / Payment / etc.)
+- Extract JWT from `Authorization: Bearer` header
+- Verify RSA signature + expiry **locally — no DB call**
+- Decrypt AES claim
+- Proceed
+
+---
+
+## Stateful Token Flow
+
+### `POST /auth/register`
+- Same as JWT flow (shared endpoint)
+
+### `POST /oauth/token` — `grant_type=password` (Login)
+- Verify password (BCrypt match)
+- Check `login_info`
+- Generate random `SecureRandom`-backed access + refresh tokens
+- **Insert** new row into `oauth_accs_tkn`
+- Cache `access_token → userId` in Redis with TTL
+- Return tokens
+
+### `POST /oauth/token` — `grant_type=refresh_token` (Refresh)
+- Look up `oauth_accs_tkn` by `refresh_token` WHERE `deleted_at IS NULL`
+- Check not expired
+- **Soft-delete** old row (`deleted_at = NOW()`)
+- Delete old access token from Redis
+- Generate new random tokens
+- **Insert new row**
+- Cache new access token in Redis
+- Return new tokens
+
+### `POST /oauth/revoke` (Logout)
+- Look up `oauth_accs_tkn` by `access_token`
+- Soft-delete (`deleted_at = NOW()`)
+- Delete key from Redis
+- Session is dead **instantly**
+
+### Every other API request (Order / Inventory / Payment / etc.)
+- Extract access token from header
+- Redis `GET` (fast path, ~1ms)
+  - Hit → proceed
+  - Miss → fall back to `oauth_accs_tkn` DB query (~10-50ms), re-cache on hit
+- 401 if not found anywhere
+
+---
+
+## One-Line Summary Per Endpoint
+
+| Endpoint | Flow | What it does |
+|---|---|---|
+| `POST /auth/register` | Both | Create user + login_info row |
+| `POST /jwt/v1/token` | JWT | Login → issue signed access + refresh JWTs, upsert DB row |
+| `POST /jwt/v1/token/refresh` | JWT | Validate + rotate tokens, device-scoped replay check |
+| `POST /jwt/v1/revoke` | JWT | Delete refresh token row (access token unaffected until expiry) |
+| `POST /oauth/token` (`grant_type=password`) | Stateful | Login → issue random tokens, insert DB row, cache in Redis |
+| `POST /oauth/token` (`grant_type=refresh_token`) | Stateful | Soft-delete old row, insert new row, refresh Redis cache |
+| `POST /oauth/revoke` | Stateful | Soft-delete DB row + delete Redis key → instant kill |
