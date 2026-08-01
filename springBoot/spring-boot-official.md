@@ -65,6 +65,40 @@ public class MyApp {
 6. Starts the embedded web server (if it's a web application).
 7. Publishes `ApplicationReadyEvent` once startup finishes.
 
+- SpringApplication.run()
+
+↓
+
+- Create ApplicationContext
+
+↓
+
+- Load Environment & Properties
+
+↓
+
+- Component Scan
+
+↓
+
+- Create & Inject Beans (IoC)
+
+↓
+
+- Auto Configuration
+
+↓
+
+- Start Embedded Server (Tomcat)
+
+↓
+
+- Run CommandLineRunner/ApplicationRunner
+
+↓
+
+- Application Ready
+
 **Q6. What is Spring Initializr?**
 A web tool (start.spring.io) and IDE plugin used to bootstrap Spring Boot projects by selecting build tool (Maven/Gradle), language, Spring Boot version, and dependencies. It generates a ready-to-use project skeleton.
 
