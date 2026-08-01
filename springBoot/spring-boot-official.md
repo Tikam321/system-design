@@ -289,14 +289,25 @@ IoC is a design principle where the control of object creation and lifecycle is 
 - `websocket`: one instance per WebSocket session.
 
 **Q35. What is the Spring Bean lifecycle?**
-1. Instantiation
-2. Populate properties (DI)
-3. `BeanNameAware`, `BeanFactoryAware`, `ApplicationContextAware` callbacks (if implemented)
-4. `BeanPostProcessor.postProcessBeforeInitialization()`
-5. `@PostConstruct` / `InitializingBean.afterPropertiesSet()` / custom `init-method`
-6. `BeanPostProcessor.postProcessAfterInitialization()`
-7. Bean ready to use
-8. On shutdown: `@PreDestroy` / `DisposableBean.destroy()` / custom `destroy-method`
+# Spring Bean Lifecycle (Interview Notes)
+- The **Spring Bean Lifecycle** describes the sequence of steps a Spring bean goes through from **creation** to **destruction** while being managed by the Spring IoC Container.
+## Easy Flow to Remember
+
+```text
+1. Instantiate Bean
+        ↓
+2. Dependency Injection
+        ↓
+3. @PostConstruct / afterPropertiesSet()
+        ↓
+4. Bean Ready to Use
+        ↓
+5. @PreDestroy / destroy()
+```
+
+## One-Line Interview Answer
+
+> The Spring IoC container creates the bean, injects its dependencies, performs initialization (`@PostConstruct`), keeps it ready for use, and finally invokes destruction callbacks (`@PreDestroy`) when the application context is closed.
 
 **Q36. What is a circular dependency, and how does Spring handle it?**
 A circular dependency occurs when Bean A depends on Bean B, and Bean B depends on Bean A. Spring can resolve this for singleton beans using setter/field injection (via early bean references in a three-level cache), but it **cannot** resolve circular dependencies with constructor injection — it throws `BeanCurrentlyInCreationException`. Best practice is to redesign to avoid circular dependencies (e.g., via `@Lazy` or refactoring shared logic into a third bean).
