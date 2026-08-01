@@ -440,3 +440,8 @@ Good luck — you've got the map now.
 
 gfg link -> https://www.geeksforgeeks.org/java/how-jvm-works-jvm-architecture/ 
 for more ref 
+
+- final answer
+- When we compile a Java program, the javac compiler converts the .java source file into platform-independent bytecode (.class). At runtime, the JVM's ClassLoader loads the class, performs linking (verification, preparation, and resolution), and initializes it.
+- The class metadata is stored in the Method Area (Metaspace), while objects are allocated in the Heap.
+- The Execution Engine initially interprets the bytecode, and as the JVM detects frequently executed methods, the JIT compiler compiles them into native machine code for better performance. Finally, the operating system schedules the JVM's native threads on CPU cores, where the machine code executes.
