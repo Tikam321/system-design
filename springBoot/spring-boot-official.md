@@ -291,6 +291,7 @@ IoC is a design principle where the control of object creation and lifecycle is 
 **Q35. What is the Spring Bean lifecycle?**
 # Spring Bean Lifecycle (Interview Notes)
 - The **Spring Bean Lifecycle** describes the sequence of steps a Spring bean goes through from **creation** to **destruction** while being managed by the Spring IoC Container.
+- "The Spring Bean Lifecycle describes the stages a bean goes through from creation to destruction. First, Spring instantiates the bean, then performs dependency injection. Next, Spring invokes lifecycle callback methods such as @PostConstruct or InitializingBean.afterPropertiesSet(). After initialization, the bean is ready to serve requests and remains managed by the Spring IoC container. When the application context is closed, Spring invokes destruction callbacks like @PreDestroy or DisposableBean.destroy() before removing the bean."
 ## Easy Flow to Remember
 
 ```text
