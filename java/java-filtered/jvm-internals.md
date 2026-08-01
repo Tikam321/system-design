@@ -445,3 +445,241 @@ for more ref
 - When we compile a Java program, the javac compiler converts the .java source file into platform-independent bytecode (.class). At runtime, the JVM's ClassLoader loads the class, performs linking (verification, preparation, and resolution), and initializes it.
 - The class metadata is stored in the Method Area (Metaspace), while objects are allocated in the Heap.
 - The Execution Engine initially interprets the bytecode, and as the JVM detects frequently executed methods, the JIT compiler compiles them into native machine code for better performance. Finally, the operating system schedules the JVM's native threads on CPU cores, where the machine code executes.
+
+
+# Java Garbage Collection Notes (Interview Ready)
+
+## 1. Garbage Collection Algorithm
+
+### Definition
+A **Garbage Collection Algorithm** is the **technique or logic** used to identify and reclaim unused memory from the heap.
+
+> Think of it as **"How garbage collection works."**
+
+### Types of Garbage Collection Algorithms
+
+### 1. Mark-Sweep
+- Marks all reachable (live) objects.
+- Sweeps (deletes) unreachable objects.
+- ❌ Problem: Causes memory fragmentation.
+
+```
+Before GC:
+[A][B][C][D]
+
+Live Objects:
+A, C
+
+After Sweep:
+[A][ ][C][ ]
+```
+
+---
+
+### 2. Mark-Compact
+- Marks all live objects.
+- Moves (compacts) live objects together.
+- Removes memory fragmentation.
+
+```
+Before:
+[A][ ][C][ ]
+
+After Compact:
+[A][C][ ][ ]
+```
+
+---
+
+### 3. Copying Algorithm
+- Copies live objects from one memory region to another.
+- Old region is discarded completely.
+- Very fast.
+- Mainly used in the **Young Generation**.
+
+```
+Eden:
+[A][B][C][D]
+
+Live Objects:
+A, C
+
+↓
+
+Survivor:
+[A][C]
+```
+
+---
+
+# 2. Garbage Collector
+
+## Definition
+
+A **Garbage Collector** is the **actual JVM implementation** that performs garbage collection by using one or more garbage collection algorithms.
+
+> Think of it as **"Who performs the garbage collection."**
+
+---
+
+## Types of Garbage Collectors
+
+### 1. Serial GC
+- Single-threaded
+- Suitable for small applications
+- Uses:
+    - Young → Copying
+    - Old → Mark-Compact
+
+---
+
+### 2. Parallel GC
+- Multi-threaded
+- Optimized for high throughput
+- Uses:
+    - Young → Copying
+    - Old → Mark-Compact
+
+---
+
+### 3. CMS (Concurrent Mark Sweep)
+- Performs most GC concurrently
+- Uses Mark-Sweep
+- ❌ Problem:
+    - Memory Fragmentation
+- Deprecated and removed from modern Java.
+
+---
+
+### 4. G1GC (Garbage First GC)
+- Default GC in Java 9+
+- Divides heap into multiple regions.
+- Uses:
+    - Young → Copying
+    - Old → Mark-Compact
+    - Concurrent Marking
+
+---
+
+### 5. ZGC
+- Designed for huge heap sizes.
+- Extremely low pause times.
+- Performs most work concurrently.
+
+---
+
+### 6. Shenandoah GC
+- Similar to ZGC.
+- Concurrent garbage collection.
+- Very low pause times.
+
+---
+
+# 3. Current JVM Garbage Collector (Java 17/21/24)
+
+## Default Garbage Collector
+
+✅ **G1GC (Garbage First Garbage Collector)**
+
+---
+
+## Algorithms used by G1GC
+
+```
+G1GC
+│
+├── Young Generation
+│      ↓
+│   Copying Algorithm
+│
+├── Old Generation
+│      ↓
+│   Mark-Compact
+│
+└── Concurrent Marking
+```
+
+---
+
+# 4. Interview Questions
+
+### Q1. What is the difference between an Algorithm and a Collector?
+
+**Algorithm**
+- Defines **how** memory is reclaimed.
+
+Examples:
+- Mark-Sweep
+- Mark-Compact
+- Copying
+
+**Collector**
+- JVM implementation that performs garbage collection using one or more algorithms.
+
+Examples:
+- Serial GC
+- Parallel GC
+- G1GC
+- ZGC
+
+---
+
+### Q2. What is the default Garbage Collector in modern Java?
+
+**Answer:**
+G1GC (Garbage First Garbage Collector)
+
+---
+
+### Q3. Which algorithms does G1GC use?
+
+- Young Generation → Copying
+- Old Generation → Mark-Compact
+- Concurrent Marking
+
+---
+
+# Easy Interview Analogy
+
+## Algorithm = Recipe 🍲
+
+Tells **how** to cook.
+
+Examples:
+- Mark-Sweep
+- Mark-Compact
+- Copying
+
+---
+
+## Collector = Chef 👨‍🍳
+
+Uses one or more recipes to prepare the meal.
+
+Examples:
+- G1GC
+- ZGC
+- Parallel GC
+
+---
+
+# Quick Revision
+
+## Algorithms
+- ✅ Mark-Sweep
+- ✅ Mark-Compact
+- ✅ Copying
+
+## Collectors
+- ✅ Serial GC
+- ✅ Parallel GC
+- ✅ CMS
+- ✅ G1GC ⭐ (Default)
+- ✅ ZGC
+- ✅ Shenandoah
+
+---
+
+# One-Line Interview Answer
+
+> **Garbage Collection Algorithms define *how* memory is reclaimed, while Garbage Collectors are JVM implementations that use those algorithms to perform garbage collection. In modern Java (17/21/24), the default collector is G1GC, which uses the Copying algorithm for the Young Generation, Mark-Compact for the Old Generation, and Concurrent Marking to minimize pause times.**
