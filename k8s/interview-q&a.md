@@ -1,20 +1,256 @@
-# Kubernetes Interview Questions & Answers
+# Docker & Kubernetes Interview Questions & Answers
 
-A comprehensive guide covering Kubernetes concepts from beginner to advanced level, suitable for interview preparation.
+A comprehensive guide covering Docker and Kubernetes concepts from beginner to advanced level, suitable for interview preparation.
 
 ---
 
 ## Table of Contents
-1. [Basic Concepts](#basic-concepts)
-2. [Architecture](#architecture)
-3. [Pods, Deployments & Workloads](#pods-deployments--workloads)
-4. [Networking](#networking)
-5. [Storage](#storage)
-6. [Configuration & Secrets](#configuration--secrets)
-7. [Scheduling & Scaling](#scheduling--scaling)
-8. [Security](#security)
-9. [Troubleshooting & Operations](#troubleshooting--operations)
-10. [Advanced / Scenario-Based Questions](#advanced--scenario-based-questions)
+
+**Part 1: Docker**
+1. [Docker Basics](#docker-basics)
+2. [Docker Images & Containers](#docker-images--containers)
+3. [Dockerfile](#dockerfile)
+4. [Docker Networking](#docker-networking)
+5. [Docker Storage/Volumes](#docker-storagevolumes)
+6. [Docker Compose](#docker-compose)
+7. [Docker Security & Best Practices](#docker-security--best-practices)
+8. [Docker Troubleshooting & Scenario-Based](#docker-troubleshooting--scenario-based)
+
+**Part 2: Kubernetes**
+9. [Basic Concepts](#basic-concepts)
+10. [Architecture](#architecture)
+11. [Pods, Deployments & Workloads](#pods-deployments--workloads)
+12. [Networking](#networking)
+13. [Storage](#storage)
+14. [Configuration & Secrets](#configuration--secrets)
+15. [Scheduling & Scaling](#scheduling--scaling)
+16. [Security](#security)
+17. [Troubleshooting & Operations](#troubleshooting--operations)
+18. [Advanced / Scenario-Based Questions](#advanced--scenario-based-questions)
+
+---
+
+# Part 1: Docker
+
+## Docker Basics
+
+### D1. What is Docker?
+Docker is a platform for developing, shipping, and running applications inside lightweight, portable containers. Containers package an application with all its dependencies, ensuring it runs consistently across different environments.
+
+### D2. What is a container? How is it different from a virtual machine?
+A container is an isolated, lightweight runtime environment that shares the host OS kernel but has its own filesystem, process space, and network stack. Unlike VMs, containers don't need a full guest OS per instance, making them faster to start and more resource-efficient. VMs virtualize hardware (via a hypervisor) and each runs a complete OS, while containers virtualize at the OS level.
+
+### D3. What is the Docker architecture?
+Docker uses a client-server architecture:
+- **Docker Client** – CLI/API used to issue commands
+- **Docker Daemon (dockerd)** – background service that builds, runs, and manages containers
+- **Docker Registry** – stores Docker images (e.g., Docker Hub, private registries)
+- **containerd/runc** – the underlying container runtime that actually creates and runs containers
+
+### D4. What is the difference between an Image and a Container?
+An **image** is a read-only template containing the application code, runtime, libraries, and dependencies. A **container** is a running (or stopped) instance of an image — a writable layer added on top of the image's read-only layers.
+
+### D5. What is Docker Hub?
+Docker Hub is a public cloud-based registry service for finding, storing, and sharing container images.
+
+---
+
+## Docker Images & Containers
+
+### D6. How are Docker images structured?
+Images are built as a series of read-only, stacked layers, each representing an instruction in the Dockerfile. Layers are cached and shared between images, which saves disk space and speeds up builds.
+
+### D7. What is the Union File System in Docker?
+It's the filesystem technique Docker uses to layer multiple directories (image layers) into a single unified view, allowing images to share common layers while a thin writable layer is added on top for the running container.
+
+### D8. What happens to data when a container is deleted?
+Any data written to the container's writable layer is lost when the container is removed, unless it was stored in a volume or bind mount, which persist independently of the container lifecycle.
+
+### D9. What is the difference between `CMD` and `ENTRYPOINT`?
+- **ENTRYPOINT** – defines the fixed, main command that always runs when the container starts.
+- **CMD** – provides default arguments to the ENTRYPOINT, or the default command if no ENTRYPOINT is set; can be overridden at runtime (`docker run image <new-cmd>`).
+They're often combined: `ENTRYPOINT` sets the executable, `CMD` sets default flags/args.
+
+### D10. What is the difference between `COPY` and `ADD` in a Dockerfile?
+`COPY` simply copies files/directories from the build context into the image. `ADD` does the same but also supports auto-extracting local tar archives and fetching remote URLs. Best practice: prefer `COPY` unless you specifically need `ADD`'s extra behavior.
+
+### D11. What are common Docker commands?
+```bash
+docker build -t myapp:1.0 .          # build an image
+docker run -d -p 8080:80 myapp:1.0   # run a container
+docker ps -a                         # list containers
+docker images                        # list images
+docker exec -it <container> bash     # shell into running container
+docker logs -f <container>           # stream logs
+docker stop/start/rm <container>     # lifecycle management
+docker rmi <image>                   # remove an image
+docker inspect <container|image>     # detailed metadata
+```
+
+### D12. What is the difference between `docker stop` and `docker kill`?
+`docker stop` sends `SIGTERM` to allow graceful shutdown, then `SIGKILL` after a grace period (default 10s). `docker kill` sends `SIGKILL` immediately, terminating the container without cleanup.
+
+### D13. What is the difference between `docker run` and `docker start`?
+`docker run` creates a **new** container from an image and starts it. `docker start` restarts an **existing, stopped** container.
+
+---
+
+## Dockerfile
+
+### D14. What is a Dockerfile?
+A text file containing a set of instructions used to automatically build a Docker image, specifying the base image, dependencies, files to copy, commands to run, exposed ports, and the startup command.
+
+### D15. What is a multi-stage build and why use it?
+Multi-stage builds use multiple `FROM` statements in a single Dockerfile, where each stage can use a different base image. Artifacts are selectively copied from one stage to another (`COPY --from=<stage>`), allowing you to compile/build in a heavy image but ship only the compiled artifact in a minimal final image — significantly reducing final image size.
+
+```dockerfile
+FROM golang:1.22 AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o myapp
+
+FROM alpine:latest
+COPY --from=builder /app/myapp /usr/local/bin/myapp
+ENTRYPOINT ["myapp"]
+```
+
+### D16. How do you reduce Docker image size?
+- Use minimal base images (`alpine`, `distroless`)
+- Use multi-stage builds
+- Combine `RUN` commands to reduce layers and clean up in the same layer (e.g., `apt-get update && apt-get install -y x && rm -rf /var/lib/apt/lists/*`)
+- Use `.dockerignore` to exclude unnecessary files from the build context
+- Avoid installing unnecessary packages/dev dependencies in the final image
+
+### D17. What is the purpose of `.dockerignore`?
+Similar to `.gitignore`, it specifies files/directories to exclude from the Docker build context, reducing build time and image size, and preventing sensitive files from being accidentally included.
+
+### D18. What is Docker layer caching and how does it affect build order?
+Docker caches each image layer; if a layer's instruction and context haven't changed, Docker reuses the cached layer instead of rebuilding it. Best practice: place instructions that change less frequently (like dependency installation) before those that change often (like copying source code), so cache is invalidated as late as possible.
+
+### D19. What does `EXPOSE` do in a Dockerfile?
+It documents which port(s) the container listens on at runtime. It does **not** actually publish the port — that requires `-p`/`--publish` at `docker run` time.
+
+---
+
+## Docker Networking
+
+### D20. What are the default Docker network types?
+- **bridge** (default) – private internal network on the host; containers communicate via this virtual bridge
+- **host** – container shares the host's network namespace directly (no isolation)
+- **none** – container has no network access
+- **overlay** – enables communication between containers across multiple Docker hosts (used in Swarm)
+- **macvlan** – assigns a MAC address to a container, making it appear as a physical device on the network
+
+### D21. How do containers communicate with each other?
+On the same user-defined bridge network, containers can reach each other using their container name as a DNS hostname. Docker's embedded DNS server resolves these names automatically.
+
+### D22. How do you expose a container's port to the host?
+```bash
+docker run -p <host_port>:<container_port> myimage
+```
+
+---
+
+## Docker Storage/Volumes
+
+### D23. What are the ways to persist data in Docker?
+- **Volumes** – managed by Docker, stored in `/var/lib/docker/volumes/`, the recommended approach
+- **Bind mounts** – map a specific host filesystem path directly into the container
+- **tmpfs mounts** – stored in host memory only, never written to disk (useful for sensitive/temporary data)
+
+### D24. What is the difference between a Volume and a Bind Mount?
+Volumes are fully managed by Docker and are portable/decoupled from host directory structure. Bind mounts depend on the host machine's specific filesystem layout, offering more direct control but less portability.
+
+---
+
+## Docker Compose
+
+### D25. What is Docker Compose?
+A tool for defining and running multi-container Docker applications using a single YAML file (`docker-compose.yml`), allowing you to configure services, networks, and volumes, and spin everything up with one command (`docker compose up`).
+
+### D26. Example docker-compose.yml
+```yaml
+version: "3.9"
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
+```
+
+### D27. What does `depends_on` do in Docker Compose?
+It controls startup **order** of services (ensuring one container starts before another), but by default does not wait for the dependency to be fully "ready" — only for it to have started. For readiness, use healthchecks combined with `depends_on: condition: service_healthy`.
+
+---
+
+## Docker Security & Best Practices
+
+### D28. How do you run a container as a non-root user?
+```dockerfile
+RUN useradd -m appuser
+USER appuser
+```
+This limits the blast radius if the container is compromised, since processes don't run with root privileges.
+
+### D29. What is Docker Content Trust?
+A security feature that enables digital signing and verification of images, ensuring only signed, trusted images are pulled and run (`DOCKER_CONTENT_TRUST=1`).
+
+### D30. What are some Docker security best practices?
+- Use minimal/official base images and scan them for vulnerabilities (Trivy, Docker Scout, Snyk)
+- Avoid running containers as root
+- Don't store secrets in images/Dockerfiles — use secret managers or runtime injection
+- Keep images updated with security patches
+- Use read-only filesystems where possible (`--read-only`)
+- Limit container capabilities (`--cap-drop=ALL`, add back only what's needed)
+- Set resource limits (`--memory`, `--cpus`) to prevent resource exhaustion attacks
+
+### D31. What is the difference between `docker save` and `docker export`?
+- `docker save` – exports an **image** (with all layers and metadata/history) to a tarball, can be reloaded with `docker load`.
+- `docker export` – exports a **container's** filesystem (flattened, no layer history) to a tarball, restored with `docker import`.
+
+---
+
+## Docker Troubleshooting & Scenario-Based
+
+### D32. A container exits immediately after starting — how do you debug it?
+```bash
+docker logs <container>
+docker inspect <container>   # check ExitCode, check for OOMKilled
+```
+Common causes: the main process completes/crashes immediately, misconfigured `CMD`/`ENTRYPOINT`, missing environment variables, or the process expects a foreground process but exits when a background daemon finishes.
+
+### D33. How do you check resource usage of running containers?
+```bash
+docker stats
+```
+Shows live CPU, memory, network I/O, and block I/O usage per container.
+
+### D34. How do you clean up unused Docker resources?
+```bash
+docker system prune -a         # remove unused containers, networks, images
+docker volume prune            # remove unused volumes
+docker container prune         # remove stopped containers
+```
+
+### D35. What's the difference between Docker Swarm and Kubernetes?
+Both are orchestration platforms, but Docker Swarm is simpler to set up and tightly integrated with Docker CLI, suited for smaller-scale deployments. Kubernetes offers a richer feature set (auto-scaling, self-healing, advanced scheduling, huge ecosystem) and is the industry standard for large-scale, production-grade container orchestration, at the cost of a steeper learning curve.
+
+### D36. How would you troubleshoot high memory usage that leads to a container being OOMKilled?
+Check `docker inspect` for `OOMKilled: true`, review the app's actual memory consumption via `docker stats`/APM tools, verify if a memory limit (`--memory`) is set too low, check for memory leaks in the application, and consider increasing limits or optimizing the application.
+
+---
+
+# Part 2: Kubernetes
 
 ---
 
