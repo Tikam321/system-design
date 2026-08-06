@@ -207,7 +207,7 @@ Limitations: field injection makes unit testing harder (can't set final fields, 
 
 ---
 
-## 2. Constructor Injection
+## Constructor Injection
 
 ### Advantages
 - Dependencies are **explicit** through the constructor.
