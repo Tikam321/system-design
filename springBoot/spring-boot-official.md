@@ -194,6 +194,41 @@ All are stereotypes of `@Component` and get registered as Spring beans, but they
 `@Autowired` injects a dependency automatically by type. It can be applied on constructors, setters, or fields.
 Limitations: field injection makes unit testing harder (can't set final fields, needs reflection) and hides dependencies; if multiple beans of the same type exist, it throws `NoUniqueBeanDefinitionException` unless combined with `@Qualifier` or `@Primary`. Constructor injection is recommended nowadays as it makes dependencies explicit and supports immutability (`final` fields), and Spring itself recommends it (constructor injection doesn't even need `@Autowired` if there's only one constructor).
 
+# @Autowired (Field Injection) vs Constructor Injection (Unit Testing)
+
+## Field Injection (@Autowired)
+
+### Disadvantages
+- Dependencies are **hidden** inside private fields.
+- Cannot create the object by directly passing mocked dependencies.
+- Mockito uses **reflection (`@InjectMocks`)** to inject mocks into private fields.
+- Object can be created with **null dependencies**, leading to `NullPointerException` if injection fails.
+- Unit tests become more dependent on Mockito/Spring instead of plain Java.
+
+---
+
+## 2. Constructor Injection
+
+### Advantages
+- Dependencies are **explicit** through the constructor.
+- Easy to create the object by directly passing mocked dependencies.
+- **No reflection** is required.
+- Dependencies can be marked `final`, making the object immutable.
+- Easier to write, read, and maintain unit tests.
+- Compiler ensures all required dependencies are provided during object creation.
+
+### Example
+
+```java
+UserRepository mockRepo = mock(UserRepository.class);
+
+UserService service = new UserService(mockRepo);
+```
+
+✅ No Spring Context  
+✅ No Reflection  
+✅ Plain Java Unit Test
+
 **Q20. Difference between `@Qualifier` and `@Primary`?**
 - `@Primary`: Marks a bean as the default choice when multiple candidates exist.
 - `@Qualifier("beanName")`: Explicitly specifies which bean to inject at the injection point, overriding the default `@Primary` choice if needed.
