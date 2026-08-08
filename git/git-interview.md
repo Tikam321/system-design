@@ -98,6 +98,93 @@ git rebase main
 - **Merge** preserves the true, non-linear history — you can see exactly when and how branches diverged and came back together (via the merge commit), but the log can get cluttered with many merge commits in active repos.
 - **Rebase** creates a clean, linear history as if all work happened sequentially — easier to read (`git log --oneline` looks like a straight line) — but it **rewrites commit hashes**, which is dangerous on shared/public branches.
 
+ # Git Merge vs Git Rebase
+
+## Initial History
+
+```
+main
+A ---- B
+
+feature
+A ---- C
+```
+
+---
+
+## Git Merge
+
+```bash
+git checkout feature
+git merge main
+```
+
+**History**
+
+```
+        C
+       / \
+A ---- B --- M
+```
+
+- Creates a **Merge Commit (`M`)**
+- Preserves branch history
+
+**Final File**
+
+```java
+class App {
+    String name = "Samsung";
+    String city = "Delhi";
+    int age = 25;
+}
+```
+
+---
+
+## Git Rebase
+
+```bash
+git checkout feature
+git rebase main
+```
+
+**What happens?**
+
+1. Remove `C`
+2. Move `feature` to `B`
+3. Replay `C` as `C'`
+
+**History**
+
+```
+A ---- B ---- C'
+```
+
+- **No Merge Commit**
+- Rewrites commit history (`C → C'`)
+
+**Final File**
+
+```java
+class App {
+    String name = "Samsung";
+    String city = "Delhi";
+    int age = 25;
+}
+```
+
+---
+
+## Key Difference
+
+| Git Merge | Git Rebase |
+|------------|------------|
+| Creates a Merge Commit | No Merge Commit |
+| Preserves history | Rewrites history |
+| Non-linear history | Linear history |
+| Final code is the same | Final code is the same |
+
 ### 17. Why is rebasing a shared/public branch dangerous?
 Rebase creates **entirely new commits** with new SHA hashes (even though the content is identical) — so if others have already pulled the original commits and you rebase and force-push, their local history now diverges from the remote, causing confusing conflicts and duplicate commits when they try to pull/push. **Golden rule: never rebase commits that have already been pushed and shared with others.**
 
