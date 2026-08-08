@@ -620,3 +620,56 @@ VPC: 10.0.0.0/16
     ├── ap-south-1a: 10.0.21.0/24
     ├── ap-south-1b: 10.0.22.0/24
     └── ap-south-1c: 10.0.23.0/24
+
+
+```
+
+# EC2 Instance Selection Guide
+
+## 1. Testing
+
+* Use **T family**: `t3.micro`, `t3.small`, `t3.medium`
+* Best for: learning, small demos, low traffic
+* Why: cheap and good for short bursts
+
+## 2. Development
+
+* Use **T family** or small **M family**
+* Best for: local-like server testing, API development, integration testing
+* Example: `t3.medium`, `m6i.large`
+* Why: balanced cost and performance
+
+## 3. Production
+
+* Use **M family** for general workloads
+* Example: `m6i.large`, `m7i.large`
+* Best for: Spring Boot apps, REST APIs, microservices
+* Why: stable, balanced CPU and memory
+
+## 4. High-Throughput Systems
+
+* Use **C family** for CPU-heavy workloads
+* Example: `c6i.large`, `c7i.large`
+* Best for: batch jobs, high compute, fast processing
+
+## 5. Memory-Heavy Systems
+
+* Use **R family**
+* Example: `r6i.large`, `r7i.large`
+* Best for: Redis, Elasticsearch, large JVM heap
+* Why: more RAM for heavy in-memory usage
+
+## 6. Easy Memory Trick
+
+* **T** = Tiny / Burstable
+* **M** = Mainstream / General purpose
+* **C** = Compute
+* **R** = RAM
+
+## 7. Simple Rule
+
+* **Testing** → `T`
+* **Development** → `T` or `M`
+* **Production** → `M`
+* **High throughput** → `C`
+* **Memory-heavy** → `R`
