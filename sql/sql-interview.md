@@ -410,6 +410,46 @@ A primary key made up of two or more columns together, used when no single colum
 
 ### 50. What does `EXPLAIN` (or `EXPLAIN ANALYZE`) show you?
 The query execution plan — how the database intends to execute the query: which indexes (if any) are used, join order and join algorithm (nested loop, hash join, merge join), estimated vs actual row counts, and where the most time/cost is spent. `EXPLAIN ANALYZE` actually runs the query and shows real execution stats, not just estimates.
+## 50. What does `EXPLAIN` (or `EXPLAIN ANALYZE`) show?
+
+### Definition
+
+- **`EXPLAIN`** shows the **estimated query execution plan**.
+- **`EXPLAIN ANALYZE`** executes the query and shows the **actual execution plan** with execution time.
+- Used to check **Index Scan vs Full Table Scan**, join order, cost, and optimize queries.
+
+### Example
+
+```sql
+EXPLAIN
+SELECT * FROM employee WHERE department_id = 10;
+```
+
+**Output**
+
+```text
+Index Scan using idx_department
+```
+
+or
+
+```text
+Seq Scan on employee
+```
+
+```sql
+EXPLAIN ANALYZE
+SELECT * FROM employee WHERE department_id = 10;
+```
+
+**Output**
+
+```text
+Index Scan using idx_department
+Actual Time: 0.03 ms
+Rows: 15
+Execution Time: 0.05 ms
+```
 
 ### 51. What is the N+1 query problem?
 Executing one query to fetch a list of records, then executing **one additional query per record** to fetch related data (e.g., fetching 100 orders, then querying each order's customer separately = 101 queries total). Fixed by using a `JOIN`, batch fetching, or ORM-specific solutions (`JOIN FETCH`, `@EntityGraph` in JPA/Hibernate).
