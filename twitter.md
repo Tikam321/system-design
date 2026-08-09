@@ -258,7 +258,7 @@ Feed generation is an intensive process and can take quite a lot of time, especi
 
 Publishing is the step where the feed data is pushed according to each specific user. This can be a quite heavy operation, as a user may have millions of friends or followers. To deal with this, we have three different approaches:
 
-- Pull Model (or Fan-out on load)
+- Pull Model (or Fan-out on read)
 
 ![newsfeed-pull-model](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/twitter/newsfeed-pull-model.png)
 
