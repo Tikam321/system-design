@@ -323,6 +323,107 @@ IoC is a design principle where the control of object creation and lifecycle is 
 - `application`: one instance per ServletContext.
 - `websocket`: one instance per WebSocket session.
 
+# IoC vs DI in Spring
+
+## IoC (Inversion of Control)
+
+**IoC is a design principle** where object creation and dependency management are delegated from application code to a container/framework.
+
+> **IoC = Who controls object creation? → Spring**
+
+---
+
+## DI (Dependency Injection)
+
+**DI is a design pattern/technique used to implement IoC**, where dependencies are provided from outside instead of being created inside the class.
+
+```java
+class OrderService {
+
+    private final PaymentService paymentService;
+
+    OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+}
+```
+
+Here, `PaymentService` is injected from outside.
+
+> **DI = How are dependencies provided? → Injection**
+
+---
+
+## Spring IoC Container
+
+Spring's **IoC Container** implements IoC and performs Dependency Injection.
+
+```text
+IoC
+ ↓
+Spring IoC Container
+ ↓
+Creates & manages beans
+ ↓
+Injects dependencies (DI)
+```
+
+---
+
+## What does `@Service` do?
+
+```java
+@Service
+class OrderService {
+
+    private final PaymentService paymentService;
+
+    OrderService(PaymentService paymentService) {
+        this.paymentService = paymentService;
+    }
+}
+```
+
+`@Service` tells Spring:
+
+> **"Register this class as a Spring bean and manage it."**
+
+Spring then discovers `OrderService`, creates it, and injects its dependencies.
+
+### Important
+
+`@Service` is **not DI itself**.
+
+DI can also be done manually:
+
+```java
+PaymentService paymentService = new PaymentService();
+
+OrderService orderService =
+        new OrderService(paymentService);
+```
+
+Here, DI is happening, but Spring is not involved.
+
+---
+
+## Interview Answer
+
+> **"IoC is a design principle where control of object creation and dependency management is transferred to a container. Dependency Injection is a technique used to achieve IoC by providing dependencies from outside the class. In Spring, the IoC Container creates and manages beans and performs Dependency Injection. `@Service` simply tells Spring to manage that class as a bean."**
+
+### Easy Memory Trick
+
+```text
+IoC = What?  → Transfer control to Spring
+
+DI  = How?   → Inject dependencies from outside
+
+Spring IoC Container = Who? → Creates, manages & injects beans
+
+@Service = Register this class as a Spring bean
+```
+
+
 **Q35. What is the Spring Bean lifecycle?**
 # Spring Bean Lifecycle (Interview Notes)
 - The **Spring Bean Lifecycle** describes the sequence of steps a Spring bean goes through from **creation** to **destruction** while being managed by the Spring IoC Container.
