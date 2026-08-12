@@ -324,6 +324,82 @@ function useWindowWidth() {
 
 ### 41. What is the `useImperativeHandle` hook used for?
 Used together with `forwardRef` to customize the instance value exposed to a parent when using `ref` on a child component — letting you expose only specific methods/values instead of the entire underlying DOM node or internal implementation.
+## `useImperativeHandle`
+
+`useImperativeHandle` allows a **child component to expose specific methods to its parent through a `ref`**.
+
+### Child Component
+
+```jsx id="ubkl5c"
+import { forwardRef, useImperativeHandle, useRef } from "react";
+
+const CustomInput = forwardRef((props, ref) => {
+  const inputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    focus() {
+      inputRef.current.focus();
+    },
+    clear() {
+      inputRef.current.value = "";
+    }
+  }));
+
+  return <input ref={inputRef} />;
+});
+
+export default CustomInput;
+```
+
+### Parent Component
+
+```jsx id="em7vzy"
+import { useRef } from "react";
+import CustomInput from "./CustomInput";
+
+function Parent() {
+  const childRef = useRef(null);
+
+  return (
+    <>
+      {/* Calling Child Component */}
+      <CustomInput ref={childRef} />
+
+      <button onClick={() => childRef.current.focus()}>
+        Focus
+      </button>
+
+      <button onClick={() => childRef.current.clear()}>
+        Clear
+      </button>
+    </>
+  );
+}
+
+export default Parent;
+```
+
+### Flow
+
+```text id="a4x97p"
+Parent
+  |
+  | ref={childRef}
+  ↓
+CustomInput (Child)
+  |
+  ├── focus()
+  └── clear()
+
+Parent calls:
+childRef.current.focus()
+childRef.current.clear()
+```
+
+**Interview Answer:**
+
+> `useImperativeHandle` lets a child expose specific methods like `focus()` or `clear()` to its parent through a `ref`.
+
 
 ### 42. What is `useId` (React 18)? Why was it introduced?
 Generates a unique, stable ID string that's consistent between server and client rendering — needed because using something like `Math.random()` for IDs (e.g., for accessibility attributes like `aria-describedby`) would produce mismatches between server-rendered and client-rendered HTML.
