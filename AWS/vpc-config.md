@@ -209,6 +209,52 @@ aws ec2 associate-route-table \
 
 ---
 
+## 8. Request Flow: Public Subnet ↔ Private Subnet
+
+The diagram below shows how a request enters the VPC, and how the public and private subnets talk to each other.
+
+```mermaid
+flowchart TD
+    Internet["Internet"]
+    IGW["Internet Gateway"]
+
+    subgraph VPC["VPC — 10.0.0.0/16"]
+        subgraph Public["Public Subnet — 10.0.1.0/24"]
+            EC2["Web server EC2<br/>Handles inbound requests"]
+            NAT["NAT Gateway<br/>Outbound internet access"]
+        end
+        subgraph Private["Private Subnet — 10.0.2.0/24"]
+            DB["Database EC2<br/>Stores application data"]
+        end
+    end
+
+    Internet --> IGW
+    IGW --> EC2
+    EC2 -->|"Private IP, local route"| DB
+    DB -.->|"Outbound only"| NAT
+    NAT -.->|"Outbound only"| IGW
+```
+
+**Request flow (solid lines, top to bottom):**
+1. A client on the internet sends a request.
+2. It hits the **Internet Gateway**, which is attached to the VPC and performs public IP ↔ private IP translation.
+3. The public route table sends it to the **web server EC2** in the public subnet (it has a public IP because "auto-assign public IP" is enabled on that subnet).
+
+**Public → private communication (left-side solid arrow):**
+- The web server talks to the **database EC2** in the private subnet using its **private IP** only, over the VPC's internal network.
+- This works because both subnets share the same VPC and the **local route** (added automatically to every route table) lets resources inside the VPC reach each other directly — no gateway is involved in this hop.
+- The database's security group should only allow inbound traffic from the web server's security group (or its private subnet CIDR), never from the internet.
+
+**Private subnet's outbound-only path (dashed lines):**
+- The database instance has no public IP and no direct route to the internet.
+- If it needs outbound access (OS patches, hitting an external API, etc.), traffic goes to the **NAT Gateway** in the public subnet via the private route table's `0.0.0.0/0 → NAT` rule.
+- The NAT Gateway forwards it out through the **Internet Gateway**.
+- Return traffic follows the same path back — nothing from the internet can *initiate* a connection into the private subnet.
+
+That asymmetry — the private subnet can *reach out* via NAT but can't be *reached* from outside — is the core reason for placing the database there.
+
+---
+
 ## Notes
 
 - **Cost consideration**: NAT Gateways are billed hourly plus per-GB data processing charges. Use a single NAT Gateway per AZ for production HA, or one shared NAT Gateway for cost savings in non-critical environments.
