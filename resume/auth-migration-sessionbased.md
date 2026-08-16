@@ -98,6 +98,220 @@ In-memory storage (e.g., a React state variable, not persisted anywhere) is actu
 
 ---
 
+---
+
+## Part 3: Code — How to Actually Configure This
+
+### Backend (Spring Boot / Java)
+
+**a) Setting the cookie when issuing a token (login endpoint)**
+
+```java
+@PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+    // Validate credentials, generate token (JWT or opaque session id)
+    String token = authService.authenticate(request.getUsername(), request.getPassword());
+
+    ResponseCookie cookie = ResponseCookie.from("access_token", token)
+            .httpOnly(true)                 // JS cannot read this cookie
+            .secure(true)                   // only sent over HTTPS
+            .sameSite("Strict")             // or "Lax" depending on your CSRF/UX tradeoff
+            .path("/")                      // cookie sent for all routes
+            .maxAge(Duration.ofMinutes(15)) // short-lived access token
+            .build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    return ResponseEntity.ok(Map.of("message", "Login successful"));
+}
+```
+
+> Note: `ResponseCookie` (Spring 5+) is preferred over the older `javax.servlet.http.Cookie` because it directly supports `SameSite`, which the older API doesn't expose natively.
+
+**b) Reading the cookie on incoming requests (auth filter)**
+
+```java
+@Component
+public class JwtAuthFilter extends OncePerRequestFilter {
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     FilterChain filterChain) throws ServletException, IOException {
+
+        String token = extractTokenFromCookie(request, "access_token");
+
+        if (token != null && jwtUtil.isValid(token)) {
+            Authentication auth = jwtUtil.getAuthentication(token);
+            SecurityContextHolder.getContext().setAuthentication(auth);
+        }
+
+        filterChain.doFilter(request, response);
+    }
+
+    private String extractTokenFromCookie(HttpServletRequest request, String cookieName) {
+        if (request.getCookies() == null) return null;
+        return Arrays.stream(request.getCookies())
+                .filter(c -> cookieName.equals(c.getName()))
+                .map(Cookie::getValue)
+                .findFirst()
+                .orElse(null);
+    }
+}
+```
+
+**c) CORS configuration — required for cookies to work cross-origin**
+
+This is the step people most often miss: with cookie-based auth, `Access-Control-Allow-Origin` **cannot** be `*` — it must be an explicit origin, and `Access-Control-Allow-Credentials` must be `true`.
+
+```java
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins("https://app.example.com")  // explicit origin, not "*"
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowCredentials(true)                      // required to send/receive cookies
+                .allowedHeaders("*");
+    }
+}
+```
+
+**d) Logout — overwrite the cookie with an expired one**
+
+```java
+@PostMapping("/logout")
+public ResponseEntity<?> logout(HttpServletResponse response) {
+    ResponseCookie cookie = ResponseCookie.from("access_token", "")
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Strict")
+            .path("/")
+            .maxAge(0)   // expires immediately
+            .build();
+
+    response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    // If using server-side sessions/opaque tokens, also invalidate the session record here (Redis/DB)
+    return ResponseEntity.ok(Map.of("message", "Logged out"));
+}
+```
+
+---
+
+### Frontend (React)
+
+**a) Sending requests with cookies — the critical setting is `credentials`**
+
+By default, browsers **don't** send cookies on cross-origin requests unless explicitly told to. This is the #1 thing people forget when migrating from localStorage (where you manually attached the header) to cookies (where the browser should handle it automatically, but only if configured).
+
+**Using `fetch`:**
+```javascript
+fetch("https://api.example.com/user/profile", {
+  method: "GET",
+  credentials: "include",   // tells the browser to send the cookie cross-origin
+});
+```
+
+**Using `axios`:**
+```javascript
+// Global config, once, e.g. in an api client setup file
+axios.defaults.withCredentials = true;
+
+// or per-request
+axios.get("https://api.example.com/user/profile", {
+  withCredentials: true,
+});
+```
+
+**b) Login flow — no manual token handling needed**
+
+```javascript
+async function login(username, password) {
+  const response = await fetch("https://api.example.com/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",   // browser stores the Set-Cookie response automatically
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) throw new Error("Login failed");
+  // No token to store manually — the cookie is already set by the browser.
+  // Just update app state to reflect "logged in".
+}
+```
+
+**c) Checking auth state on app load (since JS can't read the cookie)**
+
+```javascript
+async function checkAuth() {
+  const response = await fetch("https://api.example.com/me", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (response.ok) {
+    const user = await response.json();
+    return user;   // logged in
+  }
+  return null;      // not logged in / session expired
+}
+
+// Typically called once in a top-level useEffect on app mount
+useEffect(() => {
+  checkAuth().then(user => setUser(user));
+}, []);
+```
+
+**d) Handling 401s with silent refresh (axios interceptor example)**
+
+```javascript
+axios.interceptors.response.use(
+  response => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        await axios.post("https://api.example.com/refresh", {}, { withCredentials: true });
+        return axios(originalRequest);   // retry original request after refresh
+      } catch (refreshError) {
+        // refresh failed too — force logout / redirect to login
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+**e) Logout**
+
+```javascript
+async function logout() {
+  await fetch("https://api.example.com/logout", {
+    method: "POST",
+    credentials: "include",   // needed so the server can identify + clear the right session too
+  });
+  // update app state — the server already cleared the cookie via Set-Cookie
+}
+```
+
+---
+
+### Common Gotchas When Implementing This
+
+| Issue | Cause | Fix |
+|---|---|---|
+| Cookie never gets set in the browser | Missing `credentials: "include"` on the frontend request | Add it to every request that involves auth |
+| CORS error: "cannot use wildcard with credentials" | Backend has `allowedOrigins("*")` with `allowCredentials(true)` | Use an explicit origin, never `*`, when credentials are involved |
+| Cookie set but not sent back on next request | `SameSite=Strict` blocking it during cross-site navigation, or mismatched `domain`/`path` | Confirm the request is same-site, or relax to `Lax` if the flow requires cross-site navigation |
+| Works on `localhost` but not in production | Missing `Secure` flag combined with testing on plain HTTP locally, or domain mismatch between frontend/backend in prod | Use HTTPS in all non-local environments; align cookie `domain` with actual API domain |
+| Frontend can't check "is user logged in" instantly on load | JS genuinely can't read HttpOnly cookies — this is by design | Use a `/me` endpoint call on app load, as shown above, instead of trying to read the cookie |
+
+---
+
 ## Quick-Reference Table
 
 | Flag/Mechanism | Protects Against | Does NOT Protect Against |
