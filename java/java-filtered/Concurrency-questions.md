@@ -242,6 +242,107 @@ Token bucket needs to atomically read-and-update **two related fields** (`availa
 
 ---
 
+## Problem 4b: Rate Limiter — Lock-Free Version (CAS / `AtomicReference`)
+
+### Why build this version too
+The lock-based version (`ReentrantLock`) is correct and the safer default to reach for. But this exact problem is also the classic setup for demonstrating **lock-free programming with CAS**, which is explicitly called out as a Round 2 topic. Interviewers often ask "can you make this lock-free?" as a follow-up to the lock-based version — so practice both.
+
+### Steps to implement
+1. Represent the bucket's mutable state (`last_timestamp`, `token_count`) as a single **immutable** object (`BucketState`) — this is the key idea: since `AtomicReference` can only make *one* field atomic, you bundle everything that needs to update together into one object, and swap the whole object atomically.
+2. Wrap it in an `AtomicReference<BucketState>`.
+3. On each call: read the current state, compute what the *new* state should be (refill + consume one token) without mutating anything yet, then attempt `compareAndSet(current, newState)`.
+4. If the CAS fails (another thread updated the state in between your read and your write), **loop and retry** with a fresh read — never give up and never lock.
+
+### Solution
+```java
+import java.util.concurrent.atomic.AtomicReference;
+
+public class RateLimiterCAS {
+    private final int capacity;
+    private final int refillPerSecond;
+    private final AtomicReference<BucketState> stateRef;
+
+    public RateLimiterCAS(int capacity, int refillPerSecond) {
+        this.capacity = capacity;
+        this.refillPerSecond = refillPerSecond;
+        // start full — this is the correct initial state for a token bucket
+        this.stateRef = new AtomicReference<>(new BucketState(System.currentTimeMillis(), capacity));
+    }
+
+    private static class BucketState {
+        final long lastTimestamp;
+        final int tokenCount;
+
+        BucketState(long lastTimestamp, int tokenCount) {
+            this.lastTimestamp = lastTimestamp;
+            this.tokenCount = tokenCount;
+        }
+    }
+
+    public boolean allowRequest() {
+        while (true) {
+            BucketState current = stateRef.get();
+            long now = System.currentTimeMillis();
+
+            double elapsedSeconds = (now - current.lastTimestamp) / 1000.0;
+            int tokensToAdd = (int) (elapsedSeconds * refillPerSecond);
+
+            // cap at capacity — without this, tokens accumulate unbounded over idle time
+            int refilledTokens = Math.min(capacity, current.tokenCount + tokensToAdd);
+            long newTimestamp = tokensToAdd > 0 ? now : current.lastTimestamp;
+
+            if (refilledTokens < 1) {
+                // publish the refill even on rejection, so state isn't stale for the next caller
+                BucketState rejectedState = new BucketState(newTimestamp, refilledTokens);
+                stateRef.compareAndSet(current, rejectedState);
+                System.out.println(Thread.currentThread().getName() + " REJECTED, tokens=" + refilledTokens);
+                return false;
+            }
+
+            BucketState newState = new BucketState(newTimestamp, refilledTokens - 1);
+
+            if (stateRef.compareAndSet(current, newState)) {
+                System.out.println(Thread.currentThread().getName() + " ALLOWED, remaining=" + newState.tokenCount);
+                return true;
+            }
+            // CAS failed: another thread updated stateRef between our get() and compareAndSet().
+            // Loop and retry with a fresh read — this is the defining trait of lock-free code.
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        RateLimiterCAS limiter = new RateLimiterCAS(5, 1);
+        java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newFixedThreadPool(5);
+
+        for (int i = 0; i < 10; i++) {
+            executor.submit(limiter::allowRequest);
+            Thread.sleep(300);
+        }
+        executor.shutdown();
+        executor.awaitTermination(5, java.util.concurrent.TimeUnit.SECONDS);
+    }
+}
+```
+
+### Why immutability of `BucketState` is not optional here
+CAS (`compareAndSet`) works by comparing an *object reference* (or a primitive value) — not by comparing individual fields inside an object. If `BucketState` were mutable and you updated `tokenCount` in place, two threads could both read the same `BucketState` reference, both mutate it independently, and both succeed at "CAS" since the reference never changed — silently corrupting the count (a classic race condition hiding behind a CAS call that looks correct). Making `BucketState` immutable, and always creating a **new object** for every update, is what makes the "compare the reference, swap the whole thing" trick actually safe.
+
+### Why this needs a retry loop but the lock-based version doesn't
+With `ReentrantLock`, only one thread can be inside the critical section at a time — there's no possibility of "collision," so no retry logic is needed. With CAS, **any number of threads can race to update simultaneously**; only one wins per attempt, and everyone else's `compareAndSet` simply fails and must retry with fresh data. This retry loop *is* the lock-free mechanism — there's no blocking, no parking, just busy-retrying until you succeed.
+
+### Trade-offs vs. the lock-based version (a likely follow-up question)
+| Aspect | `ReentrantLock` version | CAS / `AtomicReference` version |
+|---|---|---|
+| Blocking | Threads park (OS-level wait) when contended | Threads never park — they spin and retry |
+| Contention behavior | Scales predictably, some threads wait their turn | Can degrade under very high contention (many wasted retries), but no thread ever "sleeps" |
+| Complexity | Simpler to reason about | Must carefully avoid mutable shared state (ABA-adjacent bugs) |
+| Typical use case | Most real systems — simpler and fast enough | High-throughput, low-latency systems where avoiding OS-level blocking matters (e.g., trading systems, high-QPS counters) |
+
+### The bug in a naive first attempt (worth mentioning if you get this wrong live and self-correct)
+A very common mistake — forgetting to cap tokens at `capacity`. Without `Math.min(capacity, ...)`, a bucket left idle for a long time accumulates far more tokens than it should, letting a thread burst through with way more allowed requests than the rate limiter was designed for. Catching this yourself and explaining why the cap is necessary is a strong signal in an interview, even if you write the buggy version first.
+
+---
+
 ## Problem 5: Custom Thread Pool from Scratch
 
 ### Requirements
