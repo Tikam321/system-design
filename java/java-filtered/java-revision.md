@@ -387,6 +387,33 @@ try {
 
 ## Collections Framework
 
+# Java Collections Framework
+
+```text
+Iterable
+└── Collection
+    ├── List (ordered; allows duplicates)
+    │   ├── ArrayList (fast random access — O(1))
+    │   ├── LinkedList (good for frequent insertions/deletions)
+    │   ├── Vector (thread-safe; legacy)
+    │   └── Stack (LIFO; legacy)
+    ├── Set (unique elements)
+    │   ├── HashSet (fast lookup)
+    │   ├── LinkedHashSet (maintains insertion order)
+    │   └── TreeSet (maintains sorted order)
+    └── Queue (FIFO processing)
+        ├── PriorityQueue (priority-based)
+        └── ArrayDeque (queue and stack implementation)
+
+Map (separate hierarchy — key-value pairs)
+├── HashMap
+├── LinkedHashMap
+├── TreeMap
+├── Hashtable (legacy)
+└── ConcurrentHashMap (thread-safe)
+```
+
+
 ### 45. What is the Java Collections Framework?
 A unified architecture of interfaces (`List`, `Set`, `Map`, `Queue`) and implementations (`ArrayList`, `HashSet`, `HashMap`, etc.) for storing, manipulating, and retrieving groups of objects, along with algorithms (`Collections.sort()`, etc.).
 
