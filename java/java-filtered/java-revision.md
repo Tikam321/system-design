@@ -514,6 +514,7 @@ List<String> list = new ArrayList<>(); // only Strings allowed, compile-time che
 
 ### 59. What is type erasure?
 Java implements generics via **type erasure** — generic type information exists only at compile time for type-checking purposes; at runtime, all generic type parameters are erased and replaced with their bounds (or `Object` if unbounded). This is why you can't do `new T()` or check `instanceof List<String>` at runtime.
+- PECS(producer extends  and consumer super)
 
 ### 60. What is the difference between `<? extends T>` and `<? super T>` (bounded wildcards)?
 - **`<? extends T>`** (upper bound): accepts `T` or any subtype — used when you only need to **read** from the structure (producer). E.g., `List<? extends Number>`.
