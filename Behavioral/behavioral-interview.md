@@ -118,6 +118,165 @@ Lastly, this role's emphasis on mentoring and driving best practices across a te
 > ⚠️ **TODO:** Confirm/add a real mentoring example, or soften this line if you don't have one yet.
 
 ---
+# Behavioral Interview Answers: Questions 10–20
+
+## 10. Tell me about a time you had to be transparent about a mistake or setback.
+
+### Situation
+I was developing a feature that required integrating several APIs and implementing CRUD operations. During development, I missed connecting the delete API on one of the pages. Because we were working toward an early release, I did not test the feature thoroughly enough, and the changes were eventually deployed to production.
+
+### Task
+I was responsible for ensuring that the feature and its critical user workflows worked correctly before release.
+
+### Action
+After deployment, users reported that they were unable to delete certain entities. I immediately discussed the problem with my manager and the relevant stakeholders, took responsibility for the issue, and explained that insufficient testing had allowed the bug to reach production. I helped identify the root cause, connected the missing API, tested the fix, and supported the redeployment.
+
+### Result
+The delete functionality was restored, and users were able to complete the affected operation again. I learned that critical workflows require regression and end-to-end testing, even when there is pressure to release early.
+
+## 11. Tell me about a time you had to learn something quickly to keep up with a project.
+
+### Situation
+I was working primarily on a backend development project, but the project requirements also required me to fix several frontend bugs. At that time, I had limited experience with frontend development, so understanding the codebase and fixing issues initially was challenging.
+
+### Task
+I needed to learn enough frontend development to resolve the bugs and contribute effectively to the project.
+
+### Action
+I started by learning the frontend fundamentals and understanding how the existing codebase was structured. I began with smaller, lower-risk bugs so I could build confidence and learn the application flow. As my understanding improved, I gradually took on more complex frontend issues.
+
+### Result
+By the end of the project, I was able to resolve the required frontend bugs, including production issues, and contribute more independently to the frontend work. This taught me that I can adapt quickly to unfamiliar technologies by learning the fundamentals first and progressively taking on more challenging work.
+
+## 12. Tell me about a time you collaborated with a team outside your usual function.
+
+### Situation
+I was responsible for implementing access control for an application. It was a complex feature, and the requirements were still evolving because we had a short timeline to complete and deploy the work.
+
+### Task
+I needed to deliver the implementation while ensuring that the permissions and business rules matched the stakeholder expectations.
+
+### Action
+I reviewed the available user stories and scope, and whenever I had questions about permissions, specifications, or expected behavior, I worked directly with the stakeholder team. I regularly clarified requirements, discussed design decisions, and kept stakeholders updated on the implementation. I also collaborated with the verification and QA teams to confirm that the access-control behavior matched the expected business rules.
+
+### Result
+Because of the ongoing communication, I was able to adapt to requirement changes and complete the implementation within the required timeline. We successfully deployed it to production without any major issues. I learned that cross-functional collaboration is especially important when requirements are complex or changing.
+
+## 13. Tell me about a time you disagreed with your manager’s decision. What did you do?
+
+### Situation
+During testing, I found an issue involving the application’s translation library. When a translation ID was empty, the library caused a null-pointer exception and the page became unusable, directly affecting the user experience.
+
+### Task
+I needed to help resolve the immediate issue while also considering whether the same problem could exist on other pages.
+
+### Action
+I suggested creating a reusable component and applying it across all pages using the library. My reasoning was that this could prevent similar issues elsewhere. However, my manager and teammates were concerned that making changes across multiple pages could introduce new bugs and delay the release. Their preference was to fix the immediate issue first.
+
+Rather than continuing the disagreement informally, I brought the manager, stakeholders, and relevant teammates together to discuss the options. We agreed on a hybrid approach: fix the affected page immediately and plan the reusable component for a future release after proper testing.
+
+### Result
+The immediate production risk was resolved without blocking delivery, while the broader technical improvement was preserved for a future release. I learned that disagreements are best handled by focusing on the problem, listening to other viewpoints, and finding a balanced solution.
+
+## 14. Tell me about a time you had to give or receive difficult feedback.
+
+### Situation
+In one project, I helped onboard several junior developers. I guided them through the codebase, architecture, business domain, frontend and backend data flow, and the coding standards used in the repository.
+
+### Task
+After assigning them smaller stories, I needed to review their pull requests and help them improve their implementation quality.
+
+### Action
+Their implementations were generally functionally correct, but I noticed that they were not consistently following the project’s coding style, design patterns, object-oriented principles, or pull-request standards. I gave specific feedback in their pull requests and scheduled a discussion with them. I first acknowledged what they were doing well, including the correctness of their workflows, and then clearly explained the areas they needed to improve. I also showed them examples of the expected coding style and pull-request descriptions.
+
+### Result
+They improved significantly and began following the project standards more consistently. This taught me that difficult feedback is most effective when it is specific, respectful, and focused on helping the person grow.
+
+## 15. Tell me about a time you had to balance competing priorities or deadlines.
+
+### Situation
+During one project, we were preparing a new environment for a client while also developing new features. At the same time, we had to break down stories, assign work to multiple developers, address pull-request review comments, and complete backend development and configuration tasks.
+
+### Task
+I needed to balance these responsibilities while keeping the client deployment on schedule.
+
+### Action
+I prioritized the work based on its impact on the release. First, I addressed the pull-request review comments because those changes were required before the features could be merged into the development branch and tested by stakeholders. Next, I focused on implementing the highest-priority features defined in the scope and created pull requests for internal review. Lower-priority backend tasks were scheduled alongside the main work or moved later so they would not affect the client deployment timeline.
+
+### Result
+By organizing the work according to urgency, dependencies, and stakeholder impact, we kept the release moving and ensured that the most important functionality was ready for testing. I learned to prioritize work based on business impact and dependencies rather than simply handling tasks in the order they arrive.
+
+## 16. Where do you see yourself in the next few years?
+
+### Situation
+As my technical experience continues to grow, I want to take on broader responsibilities within engineering projects.
+
+### Task
+My goal is to develop both deeper technical expertise and stronger leadership capabilities.
+
+### Action
+I plan to take ownership of complex features, contribute to architectural and implementation decisions, guide teammates, and mentor junior developers. I also want to become more involved in coordinating work and helping teams deliver successfully.
+
+### Result
+Over the next few years, I would like to grow into a technical leadership role where I can contribute through my own engineering work and help the wider team succeed. I want to grow with the organization and take on responsibilities that create value for both the team and the product.
+
+## 17. What kind of work environment or team culture do you thrive in?
+
+### Situation
+The projects I work on often involve complex features, changing requirements, and collaboration across different teams.
+
+### Task
+To deliver successfully, I need to work in an environment where people communicate clearly and support one another.
+
+### Action
+I thrive in a collaborative and communicative team where people feel comfortable asking questions, discussing ideas, and raising concerns early. If a teammate is blocked, I like to help them understand the issue and find a solution so the work can continue. I also believe disagreements should be handled through respectful discussion, with the focus on solving the problem rather than proving who is right.
+
+### Result
+In this type of culture, people share knowledge, give constructive feedback, and help each other grow. It creates an environment where the team can deliver work on time while continuing to learn and improve together.
+
+## 18. Tell me about a time you failed at something. What did you learn?
+
+### Situation
+One failure I experienced was deploying a feature without testing one of its critical workflows thoroughly enough. The feature included CRUD operations, but I missed properly integrating the delete API on one page.
+
+### Task
+I was responsible for ensuring that the feature worked correctly before it was released.
+
+### Action
+After deployment, the delete functionality did not work for users. Once the issue was discovered, I took responsibility and informed my manager and the relevant stakeholders. I investigated the cause, fixed the API integration, tested the functionality, and supported the redeployment to production.
+
+### Result
+The functionality was restored, but the more important outcome was the lesson I gained. Release pressure should not reduce the quality of testing, especially for important user actions. Since then, I have been more disciplined about regression testing, end-to-end testing, and validating critical workflows before deployment.
+
+## 19. How do you handle ambiguity or unclear requirements?
+
+### Situation
+In one project, I was responsible for implementing access control and file-share history features. The overall story was complex, and although the high-level design was available, many detailed specifications were unclear and continued to change during development.
+
+### Task
+I needed to make progress while ensuring that the implementation continued to match the current business requirements.
+
+### Action
+I reviewed the available scope carefully and stayed in consistent communication with the stakeholders. Whenever I had questions about the specifications, design, or expected behavior, I clarified them before continuing. I also kept stakeholders updated on my progress so changes could be identified early rather than after the entire implementation was complete. As the requirements evolved, I adjusted the implementation and continued validating the functionality with the stakeholders.
+
+### Result
+I completed and deployed the features successfully, and the stakeholders appreciated the outcome. I learned that unclear requirements should be handled through proactive communication, frequent validation, and flexibility rather than assumptions.
+
+## 20. Given this is a senior role, tell me about a time you mentored or guided a junior teammate.
+
+### Situation
+Several junior developers joined one of my projects, and they needed support understanding the existing codebase, architecture, business domain, and development practices.
+
+### Task
+I was responsible for helping them become productive and guiding them as they began working on project stories.
+
+### Action
+I provided knowledge-transfer sessions covering the project workflow, frontend and backend data flow, coding style, and repository standards. I assigned smaller stories and bug fixes so they could learn through practical work. I reviewed their pull requests and gave constructive feedback on design patterns, object-oriented principles, coding style, and pull-request descriptions. I also explained the reasons behind the standards and showed examples of how to improve their work.
+
+### Result
+The junior developers improved their implementations, coding practices, and pull-request quality. They became more comfortable working in the codebase and were able to contribute more independently. This experience strengthened my ability to mentor others and showed me how clear guidance and feedback can accelerate a teammate’s development.
+
+
 
 ## General reminders before the interview
 
