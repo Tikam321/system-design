@@ -28,3 +28,17 @@ Anaplan functions as a unified ecosystem driven by several foundational componen
 * **Speed to Insight:** Replaces manual, error-prone spreadsheet consolidation with live, automated modeling.
 * **Accuracy You Can Trust:** Combines flexible AI insights with rigid, rule-based mathematical calculations.
 * **Collaboration at Scale:** Enables cross-functional alignment so entire enterprises can execute dynamic scenario planning seamlessly.
+# What is Anaplan?
+
+At its core, **[Anaplan](https://www.anaplan.com/)** is a cloud-native enterprise planning and decision-making platform.
+
+Instead of businesses running their budgets, sales targets, supply chains, and workforce plans on scattered spreadsheets or siloed legacy software, Anaplan brings all that data together into one unified platform. It allows companies to connect different departments (like Finance, HR, Supply Chain, and Sales) so they can see how a decision in one area impacts the entire business in real-time.
+
+---
+
+## What Does Anaplan Do?
+
+* **Connected Planning:** It links data, people, and plans across the whole organization.
+*  If the supply chain team updates material costs, the finance team instantly sees how it affects overall company profitability.
+* **Scenario Modeling:** It allows businesses to run "what-if" scenarios (e.g., “What happens to our budget if inflation rises by 3% or shipping costs double?”) so they can pivot quickly.
+* **AI-Driven Decision Making:** Leveraging modern features like **[Anaplan AI](https://www.anaplan.com/platform/intelligence/)**, it combines heavy-duty math calculations with business data ontology to give companies fast, accurate, and auditable insights for resource allocation.
