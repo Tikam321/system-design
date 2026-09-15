@@ -278,6 +278,200 @@ The junior developers improved their implementations, coding practices, and pull
 
 
 
+# Anaplan Cultural Fit Prep — Questions 21–40 — Tikam Swasi
+
+> Scope: Questions 21–40 only (Q1–20 already documented separately in your GitHub repo).
+> Questions are listed **in numeric order (21 → 40)**. Each is tagged with a priority level so you know where to focus first — study 🔴 High first, then 🟡 Medium, then 🟢 Low/skip if time is short.
+
+**Priority key:** 🔴 High priority | 🟡 Medium priority | 🟢 Low priority / skipped
+
+---
+
+### Q21 — Describe a time when you led a team. What was the outcome? 🔴
+
+**Situation:** When we onboarded a new client onto our admin portal, it required new build configurations and feature-flag setup, and I naturally stepped up to lead a team of 4 developers and 1 QA to deliver it within a week — not a formally assigned lead role, I stepped into it because I understood the scope well.
+
+**Task:** My responsibility was to break down the work into stories, distribute them across the team, and make sure everyone stayed unblocked and on track for the deadline.
+
+**Action:** I divided the stories by domain/menu so each developer could own their piece without conflicts, ran daily standups to track progress and unblock anyone who got stuck, and stepped in to mentor teammates directly when they hit issues.
+
+**Result:** We shipped the new client build on schedule with zero regressions in production. Both the stakeholders and my team members were appreciated for the smooth execution. It reinforced for me that good leadership isn't just assigning tasks — it's staying close enough to the team to unblock people quickly and keep everyone moving together.
+
+> 🔁 **Dedupe note:** Same base project (new client onboarding) as Q25. If both come up, keep this one focused on **leadership/team**, and Q25 focused on the **deadline/honesty** angle.
+
+---
+
+### Q22 — Provide an example of a time when you had to make a difficult decision 🔴
+
+**Situation:** While working on a feature with a tight deadline, I noticed that critical security middleware — authorization checks and validation — hadn't been completed yet, and security testing was still pending.
+
+**Task:** I had to decide whether to push forward and try to meet the original deadline, or raise the risk and ask for more time — knowing that flagging it late meant admitting we weren't ready.
+
+**Action:** I chose transparency over speed. I set up a meeting with my managers and stakeholders and clearly laid out what was done versus what was missing — specifically calling out that shipping without proper authorization checks could expose the system to unauthorized access or data leakage in production. I proposed an additional two weeks to properly implement and test the security and validation layers.
+
+**Result:** The stakeholders agreed, we used the extra time to properly implement and test the security checks, and we deployed with zero security issues afterward. Being upfront about the risk — even though it meant pushing the deadline — was appreciated more than a rushed delivery would have been.
+
+> 🔁 **Dedupe note:** This story also directly answers any "adversity/pressure at work" or "transparency about a setback" style question, if asked separately.
+
+---
+
+### Q23 — Describe a time when you anticipated potential problems and developed preventive measures 🔴
+
+**Situation:** While testing a feature, I noticed that even though our admin portal restricted menu access based on user privileges, a user without permission to a specific page could still reach it by directly typing the URL — bypassing the UI-level restriction entirely.
+
+**Task:** Since this affected all 30 menus/routes in the application, I took ownership of fixing it comprehensively rather than patching just the one case I'd found.
+
+**Action:** I implemented a route guard — a check that runs before any route loads, verifying whether the current user actually has privilege to access that route. If not, they're automatically redirected to the home page. Applied consistently across all routes and thoroughly tested each one.
+
+**Result:** After testing, we confirmed there were no remaining bypass paths, and I discussed the fix with the client, who appreciated the extra diligence on security. It reinforced that with access-management systems, it's worth preventing an issue at the architecture level rather than assuming UI restrictions alone are enough.
+
+> 🔁 **Dedupe note:** Also usable as the base story for Q29 (explaining technical concepts) — same incident, different angle.
+
+---
+
+### Q24 — Describe a situation where you had to deal with a difficult customer/client 🔴
+
+**Situation:** After deploying a feature enhancement to production, a client ran into a production issue in one of the areas we'd implemented. They had already reported the bug to our team but were frustrated because they hadn't received a clear or timely response.
+
+**Task:** I took ownership of the situation — both to resolve the technical issue and to rebuild the client's confidence in our team's responsiveness.
+
+**Action:** I personally reached out to the client to re-open the conversation, understood exactly what they were experiencing, and reproduced the bug on my end. I traced it to an **API migration issue** — the API hadn't been properly migrated in the new release, which was causing the failure. I fixed it, tested it thoroughly, and got it deployed quickly.
+
+**Result:** The client was satisfied with both the quick fix and the proactive communication throughout, and it helped rebuild the trust that had been shaken by the earlier delayed response. It reinforced for me that with a frustrated client, speed matters, but staying closely engaged and communicative throughout the fix matters just as much as the fix itself.
+
+---
+
+### Q25 — Tell me about a time when you missed a deadline. What happened, and how did you handle it? 🟡
+
+**Situation:** While onboarding a new client, we had a one-to-two-week deadline to implement configuration changes and deploy a new build for their environment.
+
+**Task:** About a week in, it became clear we wouldn't complete all the required changes and thorough testing within the original timeline — the scope of configuration changes was larger than initially estimated.
+
+**Action:** Rather than rushing to force everything into the original deadline and risk shipping untested changes, I re-estimated the remaining work and had a transparent conversation with the client about it. I proposed splitting the release — deploying the major, high-priority features on schedule, and pushing the minor changes to a follow-up release once they were properly tested.
+
+**Result:** The client appreciated the honesty and agreed to the phased approach. We shipped the critical features on time without cutting corners on testing, and the remaining changes went out cleanly in the next release with no production issues. It taught me that missing part of an original scope and communicating it early is far better than hitting 100% of the deadline by shipping untested, risky changes.
+
+> 🔁 **Dedupe note:** Same base project as Q21 — see note above. Angle this one around the deadline/honesty decision, not the leadership aspect.
+
+---
+
+### Q26 — Tell me about a time you had to deal with a significant change at work. How did you adapt? 🟢
+
+**Status:** Not written fresh — reuse your backend→frontend transition story (documented in your Q1–20 file) since it directly demonstrates adapting to a significant change in responsibility.
+
+---
+
+### Q27 — Describe a time when you took a big risk and it failed 🟡
+
+**Situation:** I proposed migrating our application's build and package manager from **Webpack to Vite**, aiming to improve performance, caching, build speed, and bundle efficiency. The application was large — around 30 menus/pages — so this was a significant undertaking.
+
+**Task:** I took ownership of executing this migration.
+
+**Action:** I attempted to migrate all 30 pages to the Vite environment in one go, without a phased plan. During testing — and even after deploying to production — we ran into a large number of bugs, since Vite required structural changes across configurations and components that Webpack didn't.
+
+**Result:** After discussing with the team and management, we made the call to roll back to Webpack, since the new build wasn't stable enough for production — this was the failure. We then re-approached it properly: replanned the migration in phases (Phase 1 covered core files and configurations, Phase 2 covered remaining pages and components), testing at each phase. The second, phased attempt succeeded with no bugs in production. I learned that a full-scale migration without a structured, incremental plan is risky no matter how sound the underlying technology choice is — breaking it into validated phases is what actually makes a big technical change safe to ship.
+
+---
+
+### Q28 — How would you design/test a product to make sure it's diverse/inclusive to all users? 🟢
+
+**Status:** Skipped — leans more toward a PM/design interview question, low priority for a cultural fit round.
+
+---
+
+### Q29 — Describe a time you had to explain a complex technical concept to someone non-technical 🟡
+
+**Situation:** After finding that users could access restricted pages by directly typing a URL, even without permission (the same issue as Q23), I needed to explain this to a non-technical stakeholder concerned about the delay it would cause.
+
+**Task:** I had to help them understand why this was serious enough to warrant extra time, without using technical terms like "route guards" or "frontend authorization checks."
+
+**Action:** I explained it using an analogy: a locked front door with an unlocked side door around back — someone who shouldn't be inside could just walk in through the side door even though the front door looked secure. I showed them directly in the UI which "pages" (side doors) were affected.
+
+**Result:** The stakeholder immediately understood the risk and agreed the fix was worth the short delay. A simple, relatable analogy tied to a risk they already understand (security, privacy) is far more effective than explaining the technical mechanism itself.
+
+> ⚠️ **TODO:** This is a constructed example based on Q23. Swap in a real memory if one comes to mind — interviewers may probe for authenticity on this type of question.
+
+---
+
+### Q30 — Tell me about a complex technical project you've worked on 🟢
+
+**Status:** Skipped — leans toward a technical round, low priority for a cultural fit round.
+
+---
+
+### Q31 — How do you stay up-to-date with the latest technological advancements? 🟡
+
+I actively follow developments in AI, since it's moving fast and directly affects developer workflows. I try to translate what I learn into my actual work — for example, that's part of how I approached building a Python/LLM-based automation tool for my team to improve productivity.
+
+> ⚠️ **TODO:** Add real, specific sources you follow (newsletters, blogs, YouTube channels, communities) — interviewers may ask "which ones specifically?"
+> 🔁 **Dedupe note:** Same answer covers Q37 below.
+
+---
+
+### Q32 — Give an example of a time you had to debug a challenging technical issue 🟢
+
+**Status:** Skipped — leans toward a technical round, low priority for a cultural fit round.
+
+---
+
+### Q33 — Assume you're given a task to design a system. How would you approach it, and how would you resolve ambiguity? 🟢
+
+**Status:** Skipped — this belongs to a system design round, not a cultural fit round.
+
+---
+
+### Q34 — Have you been in a situation where another team was building something similar to yours? What happened? 🟢
+
+**Status:** Skipped — niche scenario, low probability of coming up.
+
+---
+
+### Q35 — Why do you want to change your current company? 🔴
+
+Samsung has genuinely been a great place to grow — good team culture, and I've had strong end-to-end ownership over the admin portal, working across both backend and frontend. That said, I've mostly been working within one product domain, and I'm at a point where I want to grow into more complex, sophisticated systems — this role's focus on the data-delivery and visualization layer sitting on top of a much larger event-driven data platform is exactly the kind of scale and technical challenge I'm looking for next. I'm excited about growing alongside a more complex domain and taking on more challenging problems as I continue building my career.
+
+> 🔁 **Dedupe note:** Pairs naturally with "Why Anaplan?" (documented in your Q1–20 file) — often asked back-to-back, so keep both consistent in tone.
+
+---
+
+### Q36 — Tell me about a time you faced a problem with several possible solutions. How did you decide, and what was the outcome? 🟢
+
+**Status:** Skipped — overlaps heavily with Q22 (difficult decision); reuse that story if this comes up.
+
+---
+
+### Q37 — What do you do to enhance your technical knowledge outside of project work? 🟡
+
+**Status:** Reuse Q31's answer — the two questions are near-identical in intent.
+
+---
+
+### Q38 — Tell me about a time you had to make a decision without all the information you needed 🟢
+
+**Status:** Skipped — low priority for a cultural fit round.
+
+---
+
+### Q39 — Tell me about a time you linked two or more problems together and identified an underlying root issue 🟢
+
+**Status:** Skipped — low priority for a cultural fit round.
+
+---
+
+### Q40 — Tell me about a time you sacrificed a short-term gain for a longer-term goal 🟢
+
+**Status:** Skipped — medium priority overall, but not prepared yet. Revisit if time allows before the interview.
+
+---
+
+## Quick reminders
+
+- Study order: all 🔴 first (Q21, Q22, Q23, Q24, Q35), then 🟡 (Q25, Q27, Q29, Q31/Q37), then 🟢 only if time allows.
+- Q21 and Q25 share the same base project — keep the angles distinct (leadership vs. deadline honesty) if both come up.
+- Q22 doubles as your best answer for any "adversity/pressure" or "transparency" style question.
+- Q23 doubles as the base story for Q29 — different framing (technical fix vs. explaining it simply).
+- Two remaining `TODO`s: Q29's real-memory swap, and Q31/37's real source names — fill these in before interview day.
+
 ## General reminders before the interview
 
 - Avoid filler phrases in delivery: "so yeah", "that's all", "so so".
