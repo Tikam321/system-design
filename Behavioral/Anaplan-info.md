@@ -1,8 +1,7 @@
 # Anaplan: Core Understanding and Architecture Plan
 
 ## 1. What is Anaplan?
-**[Anaplan](https://www.anaplan.com/)** is a cloud-native enterprise planning and decision-making platform. It bridges the gap between siloed business data and strategic execution, allowing large organizations to model, 
-plan, and pivot across multiple departments in real time.
+**[Anaplan](https://www.anaplan.com/)** is a cloud-native enterprise planning and decision-making platform. It connects all of a company's data and departments in one place, so everyone can plan together and instantly see how changes affect the whole business.
 
 ---
 
