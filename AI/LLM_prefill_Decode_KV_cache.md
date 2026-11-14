@@ -42,7 +42,7 @@ Consider two inference scenarios that process the exact same total number of tok
 
 Total end-to-end latency for an LLM inference request is governed by three components:
 
-$$T_{\text{request}} = T_{\text{queue}} + T_{\text{prefill}} + (O - 1) \times T_{\text{per\_output\_token}}$$
+$$T{\text{request}} = T{\text{queue}} + T{\text{prefill}} + (O - 1) \times T{\text{per\_output\_token}}$$
 
 Where:
 * **$T{\text{queue}}$:** Time spent waiting in the server's scheduling/batching queue.
