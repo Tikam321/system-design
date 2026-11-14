@@ -42,20 +42,20 @@ Consider two inference scenarios that process the exact same total number of tok
 
 Total end-to-end latency for an LLM inference request is governed by three components:
 
-$$T{\text{request}} = T{\text{queue}} + T{\text{prefill}} + (O - 1) \times T{\text{per\_output\_token}}$$
+$$T{\text{request}} = T{\text{queue}} + T{\text{prefill}} + (O - 1) \times T{\text{per-output-token}}$$
 
 Where:
 * **$T{\text{queue}}$:** Time spent waiting in the server's scheduling/batching queue.
 * **$T{\text{prefill}}$:** Time required to process all input prompt tokens in parallel and generate the very first output token.
 * **$O$:** Total number of generated output tokens.
-* **$T{\text{per\_output\_token}}$:** Time required to generate each subsequent output token sequentially.
+* **$T{\text{per-output-token}}$:** Time required to generate each subsequent output token sequentially.
 
 ### Key Infrastructure Metrics
 1. **TTFT (Time To First Token):**
    $$\text{TTFT} = T_{\text{queue}} + T_{\text{prefill}}$$
    Measures how quickly the user sees the model begin responding.
 2. **TPOT (Time Per Output Token):**
-   $$\text{TPOT} = T_{\text{per\_output\_token}}$$
+   $$\text{TPOT} = T_{\text{per-output-token}}$$
    Measures the streaming speed of each generated token after the first token appears.
 3. **TTLT (Time To Last Token):**
    $$\text{TTLT} = \text{TTFT} + (O - 1) \times \text{TPOT}$$
