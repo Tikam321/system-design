@@ -45,10 +45,10 @@ Total end-to-end latency for an LLM inference request is governed by three compo
 $$T_{\text{request}} = T_{\text{queue}} + T_{\text{prefill}} + (O - 1) \times T_{\text{per\_output\_token}}$$
 
 Where:
-* **$T_{\text{queue}}$:** Time spent waiting in the server's scheduling/batching queue.
-* **$T_{\text{prefill}}$:** Time required to process all input prompt tokens in parallel and generate the very first output token.
+* **$T{\text{queue}}$:** Time spent waiting in the server's scheduling/batching queue.
+* **$T{\text{prefill}}$:** Time required to process all input prompt tokens in parallel and generate the very first output token.
 * **$O$:** Total number of generated output tokens.
-* **$T_{\text{per\_output\_token}}$:** Time required to generate each subsequent output token sequentially.
+* **$T{\text{per\_output\_token}}$:** Time required to generate each subsequent output token sequentially.
 
 ### Key Infrastructure Metrics
 1. **TTFT (Time To First Token):**
