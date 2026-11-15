@@ -339,7 +339,7 @@ Because standard Softmax requires summing the exponentials across the **entire r
 At inference time, weights are frozen and generation splits into two distinct phases:
 
 ### 9.1 Prefill vs. Decode & Latency Metrics
-$$T_{\text{request}} = T_{\text{queue}} + T_{\text{prefill}} + (O - 1) \times T_{\text{per\_output\_token}}$$
+$$T_{\text{request}} = T_{\text{queue}} + T_{\text{prefill}} + (O - 1) \times T_{\text{per-output-token}}$$
 
 1. **Prefill Phase (Prompt Processing):**
    * All input tokens in the user's prompt are processed **in parallel** in a single forward pass.
